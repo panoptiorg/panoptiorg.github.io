@@ -1,0 +1,192 @@
+/* Shared pieces: type, labels, buttons, cards, boxes, pixel arrows. */
+
+.display {
+  font-family: var(--font-display);
+  font-weight: 400;
+}
+
+.h2 {
+  font-family: var(--font-display);
+  font-weight: 400;
+  font-size: clamp(40px, 6vw, 52px);
+  line-height: 1;
+  text-wrap: pretty;
+}
+
+.kicker,
+.label {
+  font-family: var(--font-code);
+  font-size: 13px;
+  letter-spacing: 0.08em;
+  line-height: 1.5;
+  color: var(--grey);
+  text-transform: uppercase;
+}
+
+.label {
+  font-size: 12px;
+}
+
+.lead {
+  font-size: 18px;
+  line-height: 28px;
+  color: var(--grey);
+}
+
+.lead b {
+  color: var(--white);
+}
+
+.taint {
+  color: var(--red);
+}
+
+.muted {
+  color: var(--grey);
+}
+
+/* buttons: primary is white with black code text, prefixed ">" in the markup */
+
+.btn {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 20px;
+  font-family: var(--font-code);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.btn--primary {
+  background: var(--white);
+  color: var(--black);
+}
+
+.btn--primary:hover {
+  background: var(--green);
+  color: var(--black);
+}
+
+.btn--line {
+  border: 1px solid var(--grey);
+  font-weight: 400;
+}
+
+.btn--small {
+  min-height: var(--tap);
+  padding: 0 14px;
+  background: transparent;
+  color: var(--white);
+  border: 1px solid var(--iron);
+  font-family: var(--font-code);
+  font-size: 12px;
+}
+
+.btn--small:hover {
+  border-color: var(--green);
+}
+
+/* cards */
+
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(260px, 100%), 1fr));
+  gap: 16px;
+}
+
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 24px;
+  background: var(--coal);
+  border: 1px solid var(--iron);
+  color: var(--white);
+  text-decoration: none;
+}
+
+a.card:hover {
+  color: var(--white);
+  border-color: var(--green);
+}
+
+a.card:hover .card__title {
+  color: var(--green);
+}
+
+.card__title {
+  font-family: var(--font-display);
+  font-size: 36px;
+  line-height: 1;
+}
+
+.card__text {
+  font-size: 15px;
+  line-height: 24px;
+  color: var(--grey);
+}
+
+/* boxes with a label on top */
+
+.duo {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr));
+  gap: 16px;
+}
+
+.box {
+  min-width: 0;
+  padding: 24px;
+  border: 1px solid var(--iron);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.box .label {
+  color: var(--green);
+}
+
+.box__text {
+  font-size: 16px;
+  line-height: 26px;
+}
+
+.box__text code {
+  font-size: 15px;
+}
+
+.box__code {
+  margin: 0;
+  font-size: 13px;
+  line-height: 21px;
+  color: var(--grey);
+  white-space: pre;
+  overflow-x: auto;
+}
+
+/* pixel arrows: dashed pixel shaft, stepped head (_includes/arrow.svg) */
+
+.arrow {
+  flex: none;
+  width: 18px;
+  height: auto;
+  color: var(--grey);
+}
+
+/* "soon": a blinking block cursor after a heading */
+
+.cursor::after {
+  content: "_";
+  margin-left: 0.1em;
+  color: var(--green);
+  animation: blink 1.2s steps(1) 4; /* stops within 5 s (WCAG 2.2.2) */
+}
+
+@keyframes blink {
+  50% {
+    opacity: 0;
+  }
+}

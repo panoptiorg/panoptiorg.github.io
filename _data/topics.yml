@@ -1,0 +1,11 @@
+# Blog topics. A post sets `topic: <id>`; the label shows above its title.
+- id: graphs
+  label: graphs
+- id: call-graphs
+  label: call graphs
+- id: dataflow
+  label: dataflow
+- id: ir
+  label: ir
+- id: identity
+  label: identity

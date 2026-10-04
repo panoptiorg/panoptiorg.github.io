@@ -1,0 +1,107 @@
+/* Base: dark only, square corners everywhere. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--black);
+  color: var(--white);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+main {
+  flex: 1 0 auto;
+}
+
+h1,
+h2,
+h3,
+p,
+figure {
+  margin: 0;
+}
+
+svg {
+  display: block;
+  max-width: 100%;
+  height: auto;
+}
+
+a {
+  color: var(--white);
+  text-decoration: underline;
+  text-decoration-color: var(--green);
+  text-underline-offset: 3px;
+}
+
+a:hover {
+  color: var(--green);
+}
+
+:focus-visible {
+  outline: 2px solid var(--green);
+  outline-offset: 2px;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  border-radius: 0;
+}
+
+/* code shows the characters typed: no == or ++ ligatures */
+code,
+pre {
+  font-family: var(--font-code);
+  font-variant-ligatures: none;
+}
+
+b,
+strong {
+  font-weight: 600;
+}
+
+::selection {
+  background: var(--moss);
+  color: var(--white);
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* the first stop for keyboard users */
+.skip {
+  position: absolute;
+  left: 16px;
+  top: -100px;
+  z-index: 10;
+  padding: 10px 16px;
+  background: var(--white);
+  color: var(--black);
+  font-family: var(--font-code);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.skip:focus {
+  top: 16px;
+  color: var(--black);
+}

@@ -1,0 +1,10 @@
+{%- comment -%}
+  A post in the home page's blog strip.
+  include.href, include.topic, include.status, include.title, include.dek
+{%- endcomment -%}
+{%- assign topic = site.data.topics | where: "id", include.topic | first -%}
+<a class="card" href="{{ include.href | relative_url }}">
+  <span class="label">{{ topic.label | default: include.topic }} · {{ include.status }}</span>
+  <span class="card__title">{{ include.title }}</span>
+  <span class="card__text">{{ include.dek }}</span>
+</a>

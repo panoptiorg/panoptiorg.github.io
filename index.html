@@ -1,0 +1,155 @@
+---
+description: Scanners stop at the repository boundary. Untrusted data doesn't. panopticode analyses all your repositories as one program and reports each taint flow with its full route.
+scripts:
+  - /assets/js/mark.js
+  - /assets/js/flow.js
+---
+<section class="wrap hero">
+  <div class="hero__text">
+    <h1 class="display hero__title">SAST<br>Taint Flow<br>Cross-repository</h1>
+  </div>
+  <div class="hero__mark">
+    <button type="button" class="mark-toggle" data-mark-toggle aria-pressed="false" aria-label="Pause the logo animation" title="Pause or play the animation" disabled>
+      {% include mark-l.svg %}
+    </button>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="problem">
+  <div class="wrap section">
+    <header class="section__head">
+      <p class="kicker">The problem</p>
+      <h2 class="h2" id="problem">Scanners stop at the repository boundary. Untrusted data doesn't.</h2>
+      <p class="lead">A search term from a web page passes through three repositories before it reaches a SQL query. Each one calls the next over the network, and the value gets a new name at every hop. A scanner that reads one repository at a time sees a source with no sink, then code with neither, then a sink with no source.</p>
+    </header>
+
+    <div class="split">
+      <figure class="flow" data-flow aria-label="Data flow: web page, BFF endpoint, GraphQL resolver, gRPC handler, SQL query">
+        <div class="flow__bar">
+          <span class="status" data-status data-state="sink">sink reached: SQL query (sqli)</span>
+          <button type="button" class="btn--small" data-toggle hidden>pause</button>
+        </div>
+        <ol class="flow__route">
+          <li class="svc" data-svc data-label="search page" data-state="reached">
+            <span class="svc__who"><span class="svc__repo">WEBAPP · SVELTE</span><span class="svc__title">Search page</span><span class="svc__code">+page.svelte · URLSearchParams.get</span></span>
+            <span class="svc__value">value: <b>?q=</b></span>
+          </li>
+          <li class="edge" data-edge data-state="on">{% include arrow.svg long=true %}<span>POST /api/search</span></li>
+          <li class="svc" data-svc data-label="bff endpoint" data-state="reached">
+            <span class="svc__who"><span class="svc__repo">WEBAPP · TYPESCRIPT</span><span class="svc__title">BFF endpoint</span><span class="svc__code">searchClient</span></span>
+            <span class="svc__value">value: <b>token</b></span>
+          </li>
+          <li class="edge" data-edge data-state="on">{% include arrow.svg long=true %}<span>GraphQL searchByToken</span></li>
+          <li class="svc" data-svc data-label="graphql resolver" data-state="reached">
+            <span class="svc__who"><span class="svc__repo">FEDERATION · GO</span><span class="svc__title">GraphQL resolver</span><span class="svc__code">Query.searchByToken</span></span>
+            <span class="svc__value">value: <b>token</b></span>
+          </li>
+          <li class="edge" data-edge data-state="on">{% include arrow.svg long=true %}<span>gRPC Account/GetAccount</span></li>
+          <li class="svc" data-svc data-label="grpc handler → sql" data-state="sink">
+            <span class="svc__who"><span class="svc__repo">BACKEND · GO</span><span class="svc__title">gRPC handler → SQL</span><span class="svc__code">FindAccountByNumber → Selectx</span></span>
+            <span class="svc__value">value: <b>req.Number</b></span>
+          </li>
+        </ol>
+      </figure>
+
+      <div class="notes">
+        <div class="note">
+          <span class="label">One repository at a time</span>
+          <span>webapp: source <span class="taint">?q=</span>, leaves over GraphQL. No SQL sink.</span>
+          <span>federation: token arrives, leaves over gRPC. The SQL is in another repository.</span>
+          <span>backend: req.Number reaches SQL, but the route starts at GetAccount. The web page is out of sight.</span>
+          <span class="muted">→ the route from ?q= to SQL is never reported</span>
+        </div>
+        <div class="note note--taint">
+          <span class="label">All three together, with panopticode</span>
+          <span>?q= → searchClient → graphql:Query.searchByToken → pb.Account/GetAccount → FindAccountByNumber → Selectx</span>
+          <span class="taint">→ 1 finding: sqli, with the full route</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap section" aria-labelledby="solution">
+  <div class="split">
+    <div class="solution__text">
+      <p class="kicker">Solution</p>
+      <h2 class="h2" id="solution">Analyse all the repositories as one program.</h2>
+      <p class="lead">A frontend reads each repository and writes its code graph (CGF). The engine loads any number of them, matches every gRPC and GraphQL client call to its handler in the other repository by contract name, and runs taint analysis across the joined program. A network call becomes an ordinary function call.</p>
+      <p class="lead"><b>The engine is language-agnostic.</b> It never reads source code, only CGF. Each language is a frontend: Go and TypeScript/Svelte today. Every new frontend adds a language, and the engine doesn't change.</p>
+      <a class="btn btn--primary" href="{{ '/panopticode/' | relative_url }}">&gt; panopticode deep dive</a>
+    </div>
+
+    <div class="pipe" role="img" aria-label="Pipeline: three repositories, read by the Go and TypeScript frontends, written as CGF, joined by the engine into findings">
+      <span class="label">Repositories</span>
+      <div class="pipe__row">
+        <div class="pipe__box"><b>webapp</b><span class="muted">Svelte, TypeScript</span></div>
+        <div class="pipe__box"><b>federation</b><span class="muted">Go</span></div>
+        <div class="pipe__box"><b>backend</b><span class="muted">Go</span></div>
+      </div>
+      <div class="pipe__arrows">{% include arrow.svg %}{% include arrow.svg %}{% include arrow.svg %}</div>
+      <span class="label">Frontends, one per language</span>
+      <div class="pipe__row">
+        <div class="pipe__box pipe__box--ts"><b>panoptife-ts</b><span class="muted">pc-fe-ts</span></div>
+        <div class="pipe__box pipe__box--go"><b>panoptife-go</b><span class="muted">pc-fe, run once per repository</span></div>
+      </div>
+      <div class="pipe__arrows">{% include arrow.svg %}{% include arrow.svg %}{% include arrow.svg %}</div>
+      <span class="label">CGF, one directory per repository</span>
+      <div class="pipe__row">
+        <div class="pipe__box pipe__box--cgf">cgf/webapp</div>
+        <div class="pipe__box pipe__box--cgf">cgf/federation</div>
+        <div class="pipe__box pipe__box--cgf">cgf/backend</div>
+      </div>
+      <div class="pipe__arrows pipe__arrows--one pipe__arrows--green">{% include arrow.svg %}</div>
+      <div class="pipe__engine"><b>panopticode engine</b><span class="muted">language-agnostic · joins contracts · taint</span></div>
+      <div class="pipe__arrows pipe__arrows--one pipe__arrows--red">{% include arrow.svg %}</div>
+      <div class="pipe__out">findings, each with its route across repositories</div>
+    </div>
+  </div>
+</section>
+
+<section class="band" aria-labelledby="single">
+  <div class="wrap section">
+    <header class="section__head">
+      <p class="kicker">One repository? No microservices?</p>
+      <h2 class="h2" id="single">Yes, it works there too.</h2>
+      <p class="lead">Cross-repository flows are what panopticode adds. Everything under them is ordinary taint analysis, and it runs on a single repository the same way.</p>
+    </header>
+    <div class="duo">
+      <div class="box">
+        <span class="label">One repository · yes</span>
+        <span class="box__text">Extract one repository and run the engine on that one CGF directory. You get every flow from a source to a sink inside it, with the same routes and the same catalog.</span>
+        <pre class="box__code">pc-fe build . --out cgf/app
+panopticode taint --catalog catalog.example.toml \
+    --cgf cgf/app &gt; chains.json</pre>
+      </div>
+      <div class="box">
+        <span class="label">A monolith · yes</span>
+        <span class="box__text">A single Go module or SvelteKit app is the simplest case: no contracts to join, just the call graph and the value flow inside it. In the example app, the <code>xss</code> and <code>open_redirect</code> findings never leave the web app.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="wrap section" aria-labelledby="blog">
+  {%- comment -%} "Coming soon" until the first post; then the three latest posts {%- endcomment %}
+  <div class="section__bar">
+    <div class="section__head">
+      <p class="kicker">From the blog</p>
+      <h2 class="h2" id="blog">{% if site.posts.size > 0 %}Recent{% else %}Coming soon<span class="cursor" aria-hidden="true"></span>{% endif %}</h2>
+    </div>
+    {%- if site.posts.size > 0 %}
+    <a class="btn btn--line" href="{{ '/blog/' | relative_url }}">all articles →</a>
+    {%- endif %}
+  </div>
+  {%- if site.posts.size > 0 %}
+  <div class="cards">
+    {%- for post in site.posts limit: 3 -%}
+      {%- assign minutes = post.content | strip_html | number_of_words | plus: 100 | divided_by: 200 | at_least: 1 -%}
+      {%- if post.minutes %}{% assign minutes = post.minutes %}{% endif -%}
+      {%- capture status %}{{ minutes }} min{% endcapture -%}
+      {%- include post-card.html href=post.url topic=post.topic status=status title=post.title dek=post.description -%}
+    {%- endfor %}
+  </div>
+  {%- endif %}
+</section>

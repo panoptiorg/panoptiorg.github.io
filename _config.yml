@@ -1,0 +1,63 @@
+# panopti.org: built by GitHub Pages (actions/jekyll-build-pages, the github-pages gem).
+# Readable JS and CSS live in src/; tools/shape.mjs writes the logo-shaped copies to assets/.
+
+title: panopti
+tagline: cross-repository taint analysis
+description: >-
+  panopticode follows untrusted data across repositories and services: it joins every
+  repository's code graph, matches gRPC and GraphQL calls to their handlers, and reports each
+  taint flow with its full route.
+url: https://panopti.org
+baseurl: ""
+lang: en
+# no GitHub Pages theme: every layout, style and script is in this repository
+theme: null
+
+# posts: _posts/YYYY-MM-DD-slug.md  ->  /blog/slug/
+permalink: /blog/:title/
+timezone: UTC
+
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  auto_ids: true
+
+plugins:
+  - jekyll-feed
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+feed:
+  path: blog/feed.xml
+
+# jekyll-seo-tag
+logo: /assets/img/mark-m.png
+social:
+  name: panoptiorg
+  links:
+    - https://github.com/panoptiorg
+    - https://x.com/panoptiorg
+twitter:
+  username: panoptiorg
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+      image: /assets/img/og.png
+  - scope:
+      path: ""
+      type: posts
+    values:
+      layout: post
+      nav: blog
+
+exclude:
+  - README.md
+  - LICENSE
+  - package.json
+  - package-lock.json
+  - node_modules/
+  - src/
+  - tools/

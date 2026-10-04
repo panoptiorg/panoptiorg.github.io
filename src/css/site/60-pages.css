@@ -1,0 +1,29 @@
+/* Pages that are not there yet (_includes/soon.html), and the 404 page. */
+
+.soon {
+  padding-block: 120px 160px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.lost {
+  padding-block: 96px 120px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 48px;
+}
+
+.lost__text {
+  flex: 1 1 440px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.lost svg {
+  width: 252px;
+  height: 252px;
+}

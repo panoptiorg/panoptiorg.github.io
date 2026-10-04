@@ -1,0 +1,50 @@
+---
+layout: default
+---
+{%- comment -%}
+  An article. Front matter (see README.md, "Writing a post"):
+    title, topic (an id from _data/topics.yml), description (the standfirst under the title,
+    also the search and RSS summary), used (short, for the index),
+    minutes (optional; otherwise counted from the words), panopticode (markdown, the closing
+    "where panopticode uses this" note), panopticode_link + panopticode_link_text (optional),
+    references (list of markdown strings), scripts (optional list of /assets/js/... modules).
+{%- endcomment -%}
+{%- assign topic = site.data.topics | where: "id", page.topic | first -%}
+{%- assign minutes = content | strip_html | number_of_words | plus: 100 | divided_by: 200 | at_least: 1 -%}
+{%- if page.minutes -%}{%- assign minutes = page.minutes -%}{%- endif -%}
+<article class="post">
+  <a class="post__back" href="{{ '/blog/' | relative_url }}">← blog</a>
+  <p class="kicker">{{ topic.label | default: page.topic }} · {{ minutes }} min · <time datetime="{{ page.date | date_to_xmlschema }}">{{ page.date | date: "%-d %B %Y" }}</time></p>
+  <h1 class="display post__title">{{ page.title }}</h1>
+  {%- if page.description %}
+  <p class="post__dek">{{ page.description }}</p>
+  {%- endif %}
+  <div class="prose">
+{{ content }}
+  </div>
+  {%- if page.panopticode %}
+  <aside class="used">
+    <p class="label">◉ where panopticode uses this</p>
+    {{ page.panopticode | markdownify }}
+    {%- if page.panopticode_link %}
+    <a class="used__link" href="{{ page.panopticode_link | relative_url }}">→ {{ page.panopticode_link_text | default: "how panopticode works" }}</a>
+    {%- endif %}
+  </aside>
+  {%- endif %}
+  {%- if page.references %}
+  <section class="refs" aria-label="References">
+    <p class="label">references</p>
+    <ul>
+      {%- for ref in page.references %}
+      <li>{{ ref | markdownify | remove: "<p>" | remove: "</p>" | strip }}</li>
+      {%- endfor %}
+    </ul>
+  </section>
+  {%- endif %}
+  {%- if page.next or page.previous %}
+  <nav class="refs" aria-label="More articles">
+    {%- if page.next %}<a href="{{ page.next.url | relative_url }}">next: {{ page.next.title }} →</a>{% endif %}
+    {%- if page.previous %}<a href="{{ page.previous.url | relative_url }}">← previous: {{ page.previous.title }}</a>{% endif %}
+  </nav>
+  {%- endif %}
+</article>

@@ -1,0 +1,7 @@
+# Main navigation. `id` matches a page's `nav:` front matter to mark the current page.
+- id: panopticode
+  label: /panopticode
+  url: /panopticode/
+- id: blog
+  label: /blog
+  url: /blog/

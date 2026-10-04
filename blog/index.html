@@ -1,0 +1,27 @@
+---
+title: Blog
+description: Algorithms, taken apart. Each article covers one algorithm behind panopticode, where it comes from, how it works step by step and what it costs.
+nav: blog
+---
+{%- comment -%}
+  "Coming soon" until the first post is published (_posts/); then the list of posts, newest first.
+{%- endcomment -%}
+{%- if site.posts.size == 0 %}
+{% include soon.html kicker="The blog" %}
+{%- else %}
+<section class="wrap page-head">
+  <p class="kicker">The blog</p>
+  <h1 class="display page-title">Algorithms, taken apart.</h1>
+</section>
+
+<section class="wrap posts-wrap" aria-label="Articles">
+  <ol class="posts">
+    {%- for post in site.posts -%}
+      {%- assign minutes = post.content | strip_html | number_of_words | plus: 100 | divided_by: 200 | at_least: 1 -%}
+      {%- if post.minutes %}{% assign minutes = post.minutes %}{% endif -%}
+      {%- capture status %}{{ minutes }} min{% endcapture -%}
+      {%- include post-row.html href=post.url topic=post.topic status=status title=post.title dek=post.description used=post.used -%}
+    {%- endfor %}
+  </ol>
+</section>
+{%- endif %}

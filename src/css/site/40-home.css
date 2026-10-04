@@ -1,0 +1,324 @@
+/* Home: hero, the problem flow, the pipeline. */
+
+.hero {
+  padding-block: 64px 80px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 48px;
+}
+
+.hero__text {
+  flex: 1 1 440px;
+  min-width: 0;
+  container-type: inline-size;
+}
+
+/* "Cross-repository" is about 6.3em wide in VT323: size the title to its column so the word
+   never breaks, up to the design's 104px (the clamp is for browsers without container units) */
+.hero__title {
+  font-size: clamp(44px, 6.6vw, 96px);
+  font-size: min(104px, 15cqi);
+  line-height: 0.9;
+}
+
+.hero__mark {
+  flex: 0 0 auto;
+  min-width: 0;
+  display: flex;
+  justify-content: center;
+}
+
+/* the mark is a pause / play button once the script runs */
+.mark-toggle {
+  display: block;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: inherit;
+  cursor: pointer;
+}
+
+.mark-toggle:disabled {
+  cursor: default;
+}
+
+/* the L mark is 39 units wide: keep it at whole multiples so every pixel stays square */
+.hero__mark svg {
+  width: 468px;
+  height: 468px;
+}
+
+@media (max-width: 560px) {
+  .hero {
+    padding-block: 40px 56px;
+  }
+
+  .hero__mark svg {
+    width: 312px;
+    height: 312px;
+  }
+}
+
+@media (max-width: 359px) {
+  .hero__mark svg {
+    width: 234px;
+    height: 234px;
+  }
+}
+
+/* the problem: one value through four services */
+
+.flow {
+  flex: 1 1 440px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.flow__bar {
+  min-height: var(--tap);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-code);
+  font-size: 12px;
+}
+
+.status {
+  color: var(--white);
+}
+
+.status[data-state=sink] {
+  color: var(--red);
+}
+
+.flow__route {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.svc {
+  padding: 14px 16px;
+  background: var(--black);
+  border: 1px solid var(--iron);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4px 16px;
+  font-family: var(--font-code);
+  font-size: 12px;
+  line-height: 18px;
+  color: var(--grey);
+}
+
+.svc__who {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.svc__repo {
+  letter-spacing: 0.06em;
+}
+
+.svc__title {
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 22px;
+  color: var(--white);
+}
+
+.svc__code {
+  overflow-wrap: anywhere;
+}
+
+.svc__value {
+  font-size: 13px;
+}
+
+.svc[data-state=reached],
+.svc[data-state=here] {
+  border-color: var(--red);
+}
+
+.svc[data-state=here] {
+  background: var(--graphite);
+}
+
+.svc[data-state=reached] .svc__value,
+.svc[data-state=here] .svc__value {
+  color: var(--red);
+}
+
+/* the reached sink: oxblood fill, white text on it */
+.svc[data-state=sink] {
+  background: var(--oxblood);
+  border-color: var(--red);
+  color: var(--white);
+}
+
+.edge {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 4px 0 4px 24px;
+  font-family: var(--font-code);
+  font-size: 14px;
+  line-height: 20px;
+  font-weight: 700;
+}
+
+.edge[data-state=on] {
+  color: var(--red);
+}
+
+.edge[data-state=on] .arrow {
+  color: var(--red);
+}
+
+.notes {
+  flex: 1 1 400px;
+  min-width: 0;
+  padding-top: 56px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  font-family: var(--font-code);
+  font-size: 13px;
+  line-height: 21px;
+}
+
+.note {
+  padding: 16px 20px;
+  border: 1px solid var(--iron);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  overflow-wrap: anywhere;
+}
+
+.note--taint {
+  border-color: var(--red);
+}
+
+.note--taint .label {
+  color: var(--red);
+}
+
+@media (max-width: 940px) {
+  .notes {
+    padding-top: 0;
+  }
+}
+
+/* the solution: repositories, frontends, CGF, the engine, findings */
+
+.pipe {
+  flex: 1 1 520px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  font-family: var(--font-code);
+  font-size: 13px;
+  line-height: 18px;
+}
+
+.pipe .label {
+  font-size: 11px;
+  padding-bottom: 6px;
+}
+
+.pipe__row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.pipe__box {
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--iron);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  overflow-wrap: anywhere;
+}
+
+.pipe__box--ts {
+  border-color: var(--lang-ts);
+}
+
+.pipe__box--go {
+  grid-column: span 2;
+  border-color: var(--lang-go);
+}
+
+.pipe__box--cgf {
+  border: 1px dashed var(--grey);
+}
+
+.pipe__arrows {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  justify-items: center;
+  padding: 6px 0;
+}
+
+.pipe__arrows--one {
+  grid-template-columns: 1fr;
+}
+
+.pipe__arrows--green .arrow {
+  color: var(--green);
+}
+
+.pipe__arrows--red .arrow {
+  color: var(--red);
+}
+
+.pipe__engine {
+  padding: 14px 16px;
+  border: 2px solid var(--green);
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.pipe__engine b {
+  color: var(--green);
+}
+
+.pipe__out {
+  padding: 14px 16px;
+  border: 1px solid var(--red);
+  color: var(--red);
+}
+
+.solution__text {
+  flex: 1 1 380px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+@media (max-width: 480px) {
+  .pipe {
+    font-size: 12px;
+  }
+
+  .pipe__box {
+    padding: 8px;
+  }
+}

@@ -1,0 +1,10 @@
+/* Everything that moves stops under reduced motion (the scripts check it too). */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}

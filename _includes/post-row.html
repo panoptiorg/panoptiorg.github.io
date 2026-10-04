@@ -1,0 +1,18 @@
+{%- comment -%}
+  A row of the article list on /blog.
+  include.href, include.topic, include.status, include.title, include.dek, include.used
+{%- endcomment -%}
+{%- assign topic = site.data.topics | where: "id", include.topic | first -%}
+<li>
+  <a class="row" href="{{ include.href | relative_url }}">
+    <span class="row__topic label">{{ topic.label | default: include.topic }}</span>
+    <span class="row__main">
+      <span class="row__title">{{ include.title }}</span>
+      <span class="row__dek">{{ include.dek }}</span>
+      {%- if include.used %}
+      <span class="row__used">used in panopticode: <span>{{ include.used }}</span></span>
+      {%- endif %}
+    </span>
+    <span class="row__status">{{ include.status }}</span>
+  </a>
+</li>

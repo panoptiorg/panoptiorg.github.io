@@ -1,0 +1,23 @@
+{
+  "name": "panopti-site",
+  "private": true,
+  "description": "panopti.org: Jekyll site for GitHub Pages; tools/ shapes every JS and CSS file into the panopti mark",
+  "type": "module",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "shape": "node tools/shape.mjs",
+    "check": "node tools/shape.mjs --check",
+    "watch": "node tools/shape.mjs --watch",
+    "test": "node --test tools/*.test.mjs",
+    "serve": "sh tools/serve.sh",
+    "build": "sh tools/serve.sh build",
+    "icons": "node tools/icons.mjs && sh tools/og.sh"
+  },
+  "devDependencies": {
+    "acorn": "8.18.0",
+    "css-tree": "3.2.1"
+  }
+}

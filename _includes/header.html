@@ -1,0 +1,12 @@
+<header class="site-header">
+  <nav class="wrap nav" aria-label="Main">
+    <a class="brand" href="{{ '/' | relative_url }}">{% include mark-s.svg %}panopti</a>
+    <div class="nav__links">
+      {%- for item in site.data.nav %}
+      {%- comment -%} the section's own page is "page"; an article inside it is "true" {%- endcomment %}
+      <a href="{{ item.url | relative_url }}"{% if page.nav == item.id %} aria-current="{% if page.url == item.url %}page{% else %}true{% endif %}"{% endif %}>{{ item.label }}</a>
+      {%- endfor %}
+      <a class="nav__ext" href="https://github.com/panoptiorg">/github ↗</a>
+    </div>
+  </nav>
+</header>

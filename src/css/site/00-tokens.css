@@ -1,0 +1,35 @@
+/* Design tokens, as in the design hand-off.
+   Fonts (SIL Open Font License) load from Google Fonts in _includes/head.html. */
+
+:root {
+  /* ground and structure */
+  --black: #0b0b0b;       /* page ground */
+  --coal: #151515;        /* panels, alternate sections, code blocks */
+  --graphite: #222222;    /* raised, hover rows, active step */
+  --iron: #3a3a3a;        /* hairlines and borders; decorative only (1.7:1) */
+  --grey: #8c8c8c;        /* muted text (5.9:1 on black), the logo's grey ring */
+  --white: #ecebe6;       /* text (16.5:1), the logo's inner ring */
+
+  /* red means taint and nothing else: sources, sinks, routes, the tainted value */
+  --red: #ff4b3e;         /* taint text and lines (5.9:1) */
+  --oxblood: #7a1712;     /* taint fill: the reached sink (white on it 9.0:1) */
+
+  /* green is the inspector: the tower, links, focus, the engine, confirmed states */
+  --green: #5cc47f;       /* (9.1:1) */
+  --moss: #1d4a31;        /* green fill (white on it 8.5:1) */
+
+  /* language colours: frontend marks and the pipeline diagram only */
+  --lang-go: #00add8;
+  --lang-ts: #3178c6;
+
+  /* type */
+  --font-display: "VT323", ui-monospace, monospace;         /* headings, 32px and up */
+  --font-body: "IBM Plex Sans", system-ui, sans-serif;       /* running text */
+  --font-code: "JetBrains Mono", ui-monospace, monospace;    /* code, labels, nav, diagrams */
+
+  /* layout */
+  --content-max: 1200px;
+  --gutter: 24px;
+  --section-pad: 72px;
+  --tap: 44px;            /* minimum height of buttons and nav links */
+}

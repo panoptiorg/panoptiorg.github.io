@@ -1,0 +1,145 @@
+/* Layout: 1200px content, 24px gutters, 72px sections; flex and grid that wrap, so
+   everything stacks on phones. Alternate sections sit on coal under a 1px iron line. */
+
+.wrap {
+  width: 100%;
+  max-width: var(--content-max);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.band {
+  border-top: 1px solid var(--iron);
+  background: var(--coal);
+}
+
+.section {
+  padding-block: var(--section-pad);
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.section__head {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  max-width: 1000px;
+}
+
+.section__head .lead {
+  max-width: 800px;
+}
+
+.section__bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+}
+
+.split {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 48px;
+  align-items: flex-start;
+}
+
+/* header */
+
+.site-header {
+  border-bottom: 1px solid var(--iron);
+}
+
+.nav {
+  padding-block: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  min-height: var(--tap);
+  font-family: var(--font-display);
+  font-size: 32px;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.brand svg {
+  width: 42px;
+  height: 42px;
+  flex: none;
+}
+
+.nav__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  font-family: var(--font-code);
+  font-size: 14px;
+}
+
+.nav__links a {
+  display: inline-flex;
+  align-items: center;
+  min-height: var(--tap);
+  padding: 0 12px;
+  text-decoration: none;
+}
+
+.nav__links a[aria-current] {
+  color: var(--green);
+}
+
+.nav__links .nav__ext {
+  color: var(--grey);
+}
+
+.nav__links .nav__ext:hover {
+  color: var(--green);
+}
+
+/* footer */
+
+.site-footer {
+  border-top: 1px solid var(--iron);
+}
+
+.footer {
+  padding-block: 32px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--font-code);
+  font-size: 13px;
+  color: var(--grey);
+}
+
+.footer__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.footer__sep {
+  color: var(--iron);
+}
+
+@media (max-width: 560px) {
+  :root {
+    --gutter: 16px;
+    --section-pad: 56px;
+  }
+
+  .nav__links a {
+    padding: 0 8px;
+  }
+}
