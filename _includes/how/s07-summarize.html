@@ -1,0 +1,54 @@
+{%- comment -%}
+  07 summarize. The four summaries are the backend's phase-1 summaries (`panopticode summary` on
+  testdata/cgf/backend): Selectx Param(0) -> Return(0); findBy Param(0), Param(1) -> sqli;
+  FindAccountByNumber Param(0) -> sqli; GetAccount Param(1)[Number] -> sqli (receiver and Source
+  rows left out). The order is callees first, as Tarjan's SCC pass gives it; the example has no
+  recursion, so every group is one function. The four questions are core/src summarize's order
+  (docs/architecture.md, Summaries). Caching is told in step 11, under "Beyond findings".
+{%- endcomment -%}
+<section class="step" id="summarize" aria-labelledby="summarize-h">
+  <p class="kicker">07 · engine</p>
+  <h2 class="h2" id="summarize-h">Summarize every function, callees first</h2>
+  <p class="lead">For every function, the engine writes a <b>summary</b>: if untrusted data comes in here, it goes out there, or it reaches this sink. A caller does not read a callee's map; it reads the callee's summary. So callees come first: the engine orders the functions so that each one is summarized after everything it calls.</p>
+
+  <div class="duo2 duo2--wide">
+    <figure class="fig" aria-label="Summaries of four backend functions, in the order the engine writes them">
+      <p class="label">Four backend functions on the route, in the order the engine summarizes them</p>
+      <ol class="sums">
+        <li class="sum">
+          <p class="sum__h"><span class="sum__n">1</span><code>Selectx(query)</code></p>
+          <p class="sum__s"><code>query</code> → result</p>
+          <p class="sum__w">A function like any other, so it gets a summary. What makes it dangerous is the catalog rule that marks a call <i>to</i> it as a sink.</p>
+        </li>
+        <li class="sum">
+          <p class="sum__h"><span class="sum__n">2</span><code>findBy(pred, args...)</code></p>
+          <p class="sum__s"><code>pred</code>, <code>args</code> → <span class="taint">■ sqli</span></p>
+          <p class="sum__w">Calls <code>Selectx(pred + args[0])</code>: both parameters reach the sink.</p>
+        </li>
+        <li class="sum">
+          <p class="sum__h"><span class="sum__n">3</span><code>FindAccountByNumber(number)</code></p>
+          <p class="sum__s"><code>number</code> → <span class="taint">■ sqli</span></p>
+          <p class="sum__w">Passes <code>number</code> to <code>findBy</code>, and reads findBy's summary, not its code.</p>
+        </li>
+        <li class="sum">
+          <p class="sum__h"><span class="sum__n">4</span><code>GetAccount(ctx, req)</code></p>
+          <p class="sum__s"><code>req.Number</code> → <span class="taint">■ sqli</span></p>
+          <p class="sum__w">The gRPC handler. Its summary is what the other services will see in step 08.</p>
+        </li>
+      </ol>
+    </figure>
+
+    <figure class="fig" aria-labelledby="ask-h">
+      <p class="label" id="ask-h">When untrusted data reaches a call, the engine asks, in order</p>
+      <ol class="ask">
+        <li><span class="ask__i" aria-hidden="true">✕</span><span><b>Is it a sanitizer?</b> Stop here.</span></li>
+        <li><span class="ask__i taint" aria-hidden="true">■</span><span><b>Is it a sink?</b> Record a hit. The data still goes on through the call.</span></li>
+        <li><span class="ask__i" aria-hidden="true">ƒ</span><span><b>Does the callee have a summary?</b> Apply it.</span></li>
+        <li><span class="ask__i" aria-hidden="true">?</span><span><b>No summary</b>, such as a library call? Assume that everything it returns is tainted, plus what a catalog rule adds, such as "<code>json.Unmarshal</code> fills its second argument".</span></li>
+      </ol>
+      <p class="cap">That last assumption keeps taint flowing through libraries the engine cannot see. It is also where most false positives come from.</p>
+    </figure>
+  </div>
+
+  <p class="more">Functions that call each other in a circle have no first one. The engine finds such groups and summarizes their functions together, round after round, until no summary changes.</p>
+</section>

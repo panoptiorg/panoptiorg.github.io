@@ -1,0 +1,172 @@
+{
+  "_source": "Real output of panopticode d0fd50d on its example system, the three repositories of the README quickstart: taint --catalog catalog.example.toml --cgf testdata/cgf/webapp --cgf testdata/cgf/federation --cgf testdata/cgf/backend (15 findings). route is chains.json's route a956a2f72f24 (absolute file paths made repo-relative; show = display names). contracts and iid are ids found in that CGF. tools/how.test.mjs recomputes every hash.",
+  "route": {
+    "id": "a956a2f72f24",
+    "class": "sqli",
+    "boundaries": 2,
+    "hops": [
+      {
+        "kind": "source",
+        "repo": "webapp",
+        "func": "src/routes/search/+page.svelte:$script",
+        "callee": "",
+        "line": -1,
+        "file": null,
+        "field": null,
+        "show": {
+          "repo": "webapp",
+          "func": "+page.svelte:$script",
+          "callee": "",
+          "at": "",
+          "depth": 0
+        }
+      },
+      {
+        "kind": "call",
+        "repo": "webapp",
+        "func": "src/routes/search/+page.svelte:$script",
+        "callee": "URLSearchParams.get",
+        "line": 10,
+        "file": "src/routes/search/+page.svelte",
+        "field": null,
+        "show": {
+          "repo": "webapp",
+          "func": "+page.svelte:$script",
+          "callee": "URLSearchParams.get",
+          "at": "+page.svelte:10",
+          "depth": 0
+        }
+      },
+      {
+        "kind": "call",
+        "repo": "webapp",
+        "func": "src/routes/search/+page.svelte:$script",
+        "callee": "src/service/gateway/endpoints/search/index.ts:searchClient",
+        "line": 11,
+        "file": "src/routes/search/+page.svelte",
+        "field": null,
+        "show": {
+          "repo": "webapp",
+          "func": "+page.svelte:$script",
+          "callee": "searchClient",
+          "at": "+page.svelte:11",
+          "depth": 0,
+          "note": "browser to BFF, POST /api/search"
+        }
+      },
+      {
+        "kind": "call",
+        "repo": "webapp",
+        "func": "src/service/gateway/endpoints/search/index.ts:searchClient",
+        "callee": "src/service/gateway/endpoints/search/index.ts:$op",
+        "line": 19,
+        "file": "src/service/gateway/endpoints/search/index.ts",
+        "field": null,
+        "show": {
+          "repo": "webapp",
+          "func": "searchClient",
+          "callee": "$op",
+          "at": "endpoints/search/index.ts:19",
+          "depth": 1
+        }
+      },
+      {
+        "kind": "boundary",
+        "repo": "webapp",
+        "func": "src/service/gateway/endpoints/search/index.ts:$op",
+        "callee": "graphql:Query.searchByToken",
+        "line": 7,
+        "file": "src/service/gateway/endpoints/search/index.ts",
+        "field": null,
+        "show": {
+          "repo": "webapp",
+          "func": "$op",
+          "callee": "graphql:Query.searchByToken",
+          "at": "endpoints/search/index.ts:7",
+          "depth": 2
+        }
+      },
+      {
+        "kind": "boundary",
+        "repo": "example.com/federation",
+        "func": "(*example.com/federation/graph.queryResolver).SearchByToken",
+        "callee": "pb.Account/GetAccount",
+        "line": 93,
+        "file": "graph/graph.go",
+        "field": "Number",
+        "show": {
+          "repo": "federation",
+          "func": "SearchByToken",
+          "callee": "pb.Account/GetAccount",
+          "at": "graph/graph.go:93",
+          "depth": 3
+        }
+      },
+      {
+        "kind": "call",
+        "repo": "example.com/backend",
+        "func": "(*example.com/backend/app.Implementation).GetAccount",
+        "callee": "(*example.com/backend/store.Storage).FindAccountByNumber",
+        "line": 20,
+        "file": "app/app.go",
+        "field": null,
+        "show": {
+          "repo": "backend",
+          "func": "GetAccount",
+          "callee": "FindAccountByNumber",
+          "at": "app/app.go:20",
+          "depth": 4
+        }
+      },
+      {
+        "kind": "call",
+        "repo": "example.com/backend",
+        "func": "(*example.com/backend/store.Storage).FindAccountByNumber",
+        "callee": "(*example.com/backend/store.Storage).findBy",
+        "line": 18,
+        "file": "store/store.go",
+        "field": null,
+        "show": {
+          "repo": "backend",
+          "func": "FindAccountByNumber",
+          "callee": "findBy",
+          "at": "store/store.go:18",
+          "depth": 5
+        }
+      },
+      {
+        "kind": "sink",
+        "repo": "example.com/backend",
+        "func": "(*example.com/backend/store.Storage).findBy",
+        "callee": "(*example.com/backend/store.Storage).Selectx",
+        "line": 13,
+        "file": "store/store.go",
+        "field": null,
+        "show": {
+          "repo": "backend",
+          "func": "findBy",
+          "callee": "Selectx",
+          "at": "store/store.go:13",
+          "depth": 6
+        }
+      }
+    ]
+  },
+  "contracts": [
+    {
+      "name": "pb.Account/GetAccount",
+      "id": "2f3f5d36df6f8880addccb7840a4fd4377a695f2f5e3acbd6accf2d5084debe4"
+    },
+    {
+      "name": "graphql:Query.searchByToken",
+      "id": "fbfd406e63d5ef847b7a837bcaaf8b92e4c79686cfe88a51086cc87c4c6459cf"
+    }
+  ],
+  "iid": {
+    "repo": "example.com/federation",
+    "package": "example.com/federation/graph",
+    "name": "(*example.com/federation/graph.queryResolver).SearchByToken",
+    "signature": "func(ctx context.Context, token string) (string, error)",
+    "id": "208c2cf2d9c4"
+  }
+}

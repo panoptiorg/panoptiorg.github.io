@@ -1,0 +1,6 @@
+{%- comment -%}
+  A pixel connector between two things in a row: a dashed pixel shaft that stretches, then the
+  stepped head of the site's pixel arrows. Colour comes from CSS (currentColor). include.cls:
+  extra classes (e.g. "lit" for the red of the route).
+{%- endcomment -%}
+<span class="wire{% if include.cls %} {{ include.cls }}{% endif %}" aria-hidden="true"><i></i>{% include how/head.svg %}</span>

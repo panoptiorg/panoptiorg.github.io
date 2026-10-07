@@ -1,0 +1,68 @@
+{%- comment -%}
+  01 functions. Three places in webapp where data moves without a call in the text, and what
+  pc-fe-ts writes for each. The lowered template lines are pc-fe-ts's lowerSvelte() output for
+  src/routes/search/+page.svelte (the three calls are named svelte:tpl, svelte:bind and
+  svelte:html in the CGF). The adapter lines are adapters/bff-gateway.toml, abridged. searchClient
+  and $op are the functions in the golden CGF (testdata/cgf/webapp): searchClient has
+  src_params [0] and calls $op; $op calls graphql:Query.searchByToken (INVOKES_REMOTE), then mapper.
+  The "after" columns are those facts written as TypeScript, not text the frontend prints.
+{%- endcomment -%}
+<section class="step" id="functions" aria-labelledby="functions-h">
+  <p class="kicker">01 · frontends</p>
+  <h2 class="h2" id="functions-h">Turn everything into functions and calls</h2>
+  <p class="lead">Everything the engine analyses is a function or a call between functions. Most code already is that. Some code moves data without a call you can see in the text, and the frontend knows these patterns: it rewrites each one into a function or a call. The route has three, all in the web app.</p>
+
+  <figure class="fig" aria-label="Three pieces of the web app, before and after the TypeScript frontend rewrites them">
+    <ol class="rw">
+      <li class="rw__row">
+        <p class="rw__k"><span class="rw__n">1</span>A Svelte template <span class="muted">· +page.svelte</span></p>
+<pre class="code rw__a"><code>&lt;input bind:value={typed} /&gt;
+&lt;button on:click={run}&gt;search&lt;/button&gt;
+{@html res}</code></pre>
+        <span class="rw__to" aria-hidden="true">→</span>
+<pre class="code rw__b"><code><span class="muted">// in the page's function, +page.svelte:$script</span>
+__pc_tpl(run);
+typed = __pc_bind();
+__pc_html(res);</code></pre>
+        <p class="rw__why">The page becomes one function, and each place where the template moves data becomes a call. The button calls <code>run</code>, which reads <code>?q=</code> (see the example's code above), so that read is now inside the page's function. <code>bind:</code> and <code>{@html}</code> become calls too, so a catalog rule (step 06) can name <code>{@html res}</code> as an XSS sink.</p>
+      </li>
+
+      <li class="rw__row">
+        <p class="rw__k"><span class="rw__n">2</span>A handler that a library builds <span class="muted">· BFF, endpoints/search/index.ts</span></p>
+<pre class="code rw__a"><code>export const searchClient =
+	$gateway.getClientHandler('search');</code></pre>
+        <span class="rw__to" aria-hidden="true">→</span>
+<pre class="code rw__b"><code><span class="muted">// the handler behind POST /api/search</span>
+function searchClient(<span class="taint">variables</span>) { <span class="muted">// untrusted</span>
+	return $op(variables);
+}</code></pre>
+        <div class="rw__why">
+          <p>To the compiler this is a constant made by a library it cannot see into. An <b>adapter</b>, a few lines of data per library, tells the frontend what the library does:</p>
+<pre class="code rw__ad"><code><span class="muted"># adapters/bff-gateway.toml</span>
+[[handler]]
+factories = ["getClientHandler", …]
+methods   = ["call", …]
+route     = "POST /api/{path}"</code></pre>
+          <p>So <code>searchClient</code> is a request handler, and a request is untrusted input.</p>
+        </div>
+      </li>
+
+      <li class="rw__row">
+        <p class="rw__k"><span class="rw__n">3</span>A GraphQL query in a string <span class="muted">· the same file</span></p>
+<pre class="code rw__a"><code>gql`
+	query Search($token: String!) {
+		searchByToken(token: $token)
+	}
+`</code></pre>
+        <span class="rw__to" aria-hidden="true">→</span>
+<pre class="code rw__b"><code>function $op(token) {
+	const answer =
+		<b>◆ graphql:Query.searchByToken</b>(token);
+	return mapper(answer);
+}</code></pre>
+        <p class="rw__why">The frontend parses the query against the GraphQL schema: it asks for the field <code>searchByToken</code> of the type <code>Query</code>, passing <code>token</code>. That is a call into another service, and step 04 explains its name.</p>
+      </li>
+    </ol>
+    <p class="cap">Go needs less of this. The Go frontend loads a module the way the Go compiler does, with every name and type resolved, and reads each function in SSA form, where every value is assigned exactly once.</p>
+  </figure>
+</section>

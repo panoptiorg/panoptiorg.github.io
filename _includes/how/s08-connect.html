@@ -1,0 +1,64 @@
+{%- comment -%}
+  08 connect. The rounds are measured, not drawn from the algorithm: compose::fixpoint_with_leaves
+  on the example's three repositories, logged by a throwaway instrumented build (same 15 chains).
+  Round 0 publishes all 7 views (GetAccount and the two Feed streams already carry sinks); round
+  1 re-summarizes the 10 functions with remote calls, and 13 summaries change, SearchByToken among
+  them, so graphql:Query.searchByToken is published again; round 2 re-summarizes $op, its only
+  caller, and $op, searchClient, +page.svelte:$script and +page.server.ts:load change; then
+  nothing is dirty. One row per round, top to bottom; in each row the route's three repositories
+  left to right, with its two contracts between them. A repository is .sql when the summary of
+  its function on the route reaches SQL at the end of that round, .nw when that changed in the
+  round; a contract is .sql when its published summary reaches SQL, .nw when it was copied in
+  that round (the arrow).
+{%- endcomment -%}
+<section class="step" id="connect" aria-labelledby="connect-h">
+  <p class="kicker">08 · engine</p>
+  <h2 class="h2" id="connect-h">Connect the services</h2>
+  <p class="lead">After step 07, every repository is summarized on its own, and each call into another service is still a gap. The engine fills a gap by copying the handler's summary onto the contract, renumbered to match the caller's arguments. The caller then reads it like any other summary: no new algorithm. Whoever learns something is summarized again, which can change a contract it serves in turn, so the engine repeats until nothing changes. On this route, "reaches SQL" travels back one repository per round:</p>
+
+  <figure class="fig" aria-labelledby="connect-cap">
+    <ol class="cx">
+      <li class="cx__row">
+        <p class="cx__t"><b>Before</b>Each repository was summarized alone. Only the backend knows that its handler, <code>GetAccount</code>, reaches SQL. Both contracts are gaps.</p>
+        <div class="cx__s">
+          <span class="cx__r"><b>webapp</b><code>page, searchClient, $op</code></span>
+          <span class="cx__k"><b>◆ <span>GraphQL</span></b><i>gap</i></span>
+          <span class="cx__r"><b>federation</b><code>SearchByToken</code></span>
+          <span class="cx__k"><b>◆ <span>gRPC</span></b><i>gap</i></span>
+          <span class="cx__r sql"><b>backend</b><code>GetAccount</code><i>■ reaches SQL</i></span>
+        </div>
+      </li>
+      <li class="cx__row">
+        <p class="cx__t"><b>Round 0</b>Every contract gets a copy of its handler's summary. The gRPC contract <code>pb.Account/GetAccount</code> now says: the request reaches SQL.</p>
+        <div class="cx__s">
+          <span class="cx__r"><b>webapp</b><code>page, searchClient, $op</code></span>
+          <span class="cx__k"><b>◆ <span>GraphQL</span></b><i>no SQL yet</i></span>
+          <span class="cx__r"><b>federation</b><code>SearchByToken</code></span>
+          <span class="cx__k sql nw"><b>◆ <span>gRPC</span></b><i>■ reaches SQL</i></span>
+          <span class="cx__r sql"><b>backend</b><code>GetAccount</code><i>■ reaches SQL</i></span>
+        </div>
+      </li>
+      <li class="cx__row">
+        <p class="cx__t"><b>Round 1</b>The federation is summarized again, reading that contract: <code>SearchByToken</code> reaches SQL. So the GraphQL contract it serves, <code>graphql:Query.searchByToken</code>, gets its new summary.</p>
+        <div class="cx__s">
+          <span class="cx__r"><b>webapp</b><code>page, searchClient, $op</code></span>
+          <span class="cx__k sql nw"><b>◆ <span>GraphQL</span></b><i>■ reaches SQL</i></span>
+          <span class="cx__r sql nw"><b>federation</b><code>SearchByToken</code><i>■ reaches SQL</i></span>
+          <span class="cx__k sql"><b>◆ <span>gRPC</span></b><i>■ reaches SQL</i></span>
+          <span class="cx__r sql"><b>backend</b><code>GetAccount</code><i>■ reaches SQL</i></span>
+        </div>
+      </li>
+      <li class="cx__row">
+        <p class="cx__t"><b>Round 2</b>The web app is summarized again: <code>$op</code>, <code>searchClient</code> and the page reach SQL. Nothing else changes, so the engine stops.</p>
+        <div class="cx__s">
+          <span class="cx__r sql nw"><b>webapp</b><code>page, searchClient, $op</code><i>■ reaches SQL</i></span>
+          <span class="cx__k sql"><b>◆ <span>GraphQL</span></b><i>■ reaches SQL</i></span>
+          <span class="cx__r sql"><b>federation</b><code>SearchByToken</code><i>■ reaches SQL</i></span>
+          <span class="cx__k sql"><b>◆ <span>gRPC</span></b><i>■ reaches SQL</i></span>
+          <span class="cx__r sql"><b>backend</b><code>GetAccount</code><i>■ reaches SQL</i></span>
+        </div>
+      </li>
+    </ol>
+    <figcaption class="cap" id="connect-cap">Filled: what changed in that round; the arrow marks a summary copied onto a contract. Without these rounds there is no route: before them, nothing outside the backend reaches SQL.</figcaption>
+  </figure>
+</section>

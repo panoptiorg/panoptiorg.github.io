@@ -1,0 +1,110 @@
+# The algorithms behind /panopticode, in page order: the blog posts to come. The page does not
+# list them for now.
+#
+# slug   the blog post it becomes: _posts/YYYY-MM-DD-<slug>.md, published at /blog/<slug>/.
+# topic  an id from _data/topics.yml
+# step   the anchor of the step on /panopticode/ that uses it
+# used   where panopticode uses it, short
+# line   one sentence, plain words
+- slug: ssa
+  name: Static single assignment
+  topic: ir
+  step: functions
+  used: pc-fe, every Go function body
+  line: Every value is assigned exactly once, and where two paths meet a φ says which one arrives. go/ssa builds it with Lengauer–Tarjan dominators and Cytron et al.'s φ placement.
+- slug: svelte-lowering
+  name: Lowering templates into code
+  topic: ir
+  step: functions
+  used: pc-fe-ts, every .svelte file
+  line: A component becomes one TypeScript unit, and its expressions, event handlers, bindings and raw HTML become calls the analysis can see.
+- slug: class-hierarchy-analysis
+  name: Class hierarchy analysis
+  topic: call-graphs
+  step: calls
+  used: pc-fe --dispatch cha
+  line: Every type that implements the interface is a possible target. Fast, and generous.
+- slug: variable-type-analysis
+  name: Variable type analysis
+  topic: call-graphs
+  step: calls
+  used: pc-fe --dispatch vta, the default
+  line: Follow which concrete types can actually flow into a variable, and keep only those targets.
+- slug: name-resolution-ts
+  name: Following names in TypeScript
+  topic: call-graphs
+  step: calls
+  used: pc-fe-ts call resolution
+  line: The compiler's symbols first, through re-exports and renames, then by hand through object literals, factories and wrappers such as debounce.
+- slug: value-flow-graphs
+  name: Value-flow graphs, calls as walls
+  topic: dataflow
+  step: flow
+  used: LocalFlow, in both frontends
+  line: Collapse everything that happens inside a function onto its entry and exit ports, and never draw an edge through a call.
+- slug: k-limited-access-paths
+  name: k-limited access paths
+  topic: dataflow
+  step: flow
+  used: field paths, k = 2
+  line: Track req.Number, not just req, but only two fields deep. What the cut-off costs.
+- slug: contract-join
+  name: Joining services by name
+  topic: identity
+  step: contracts
+  used: gRPC and GraphQL contracts
+  line: Two programs that never see each other derive the same name from generated code, and hash it the same way.
+- slug: tarjan-scc
+  name: Tarjan's strongly connected components
+  topic: graphs
+  step: summarize
+  used: the engine, summary order
+  line: One depth-first pass, two numbers per node and a stack. Out come the groups of functions that call each other, callees first.
+- slug: functional-summaries
+  name: Functional summaries
+  topic: dataflow
+  step: summarize
+  used: the engine, phase 1
+  line: Describe each function once, as a map from what comes in to what goes out, then apply it at every call. Sharir and Pnueli, and how it relates to IFDS.
+- slug: fixpoints
+  name: Worklists and least fixpoints
+  topic: dataflow
+  step: connect
+  used: recursive groups, contracts, heap cells
+  line: Repeat until nothing changes. Why that always stops on a finite lattice, and what an iteration cap tells you.
+- slug: default-leaf
+  name: Code you cannot see
+  topic: dataflow
+  step: summarize
+  used: every call with no body
+  line: What to assume about a library call. The default leaf, propagator rules and write-back edges.
+- slug: early-cutoff
+  name: Hash the behaviour, not the code
+  topic: identity
+  step: output
+  used: iid, bid, summary keys, --store, impact
+  line: Content-addressed summaries. An edit that keeps a function's behaviour leaves its callers' cache keys alone.
+- slug: heap-cells
+  name: Field-based heap cells
+  topic: dataflow
+  step: connect
+  used: pc-fe --heap-slots
+  line: One shared cell per type and field joins a writer and a reader that never meet at a call.
+- slug: witness-reconstruction
+  name: Rebuilding the route
+  topic: dataflow
+  step: route
+  used: every finding's route
+  line: Summaries know that data gets through. A top-down descent recovers how, hop by hop.
+- slug: backward-demand
+  name: Checking it backwards
+  topic: dataflow
+  step: confirm
+  used: --backward
+  line: Start at the sink, walk real function bodies backwards, and carry the exact field you are looking for.
+- slug: recursive-cte
+  name: Graph reachability in SQL
+  topic: graphs
+  step: output
+  used: panopticode query, with Postgres
+  line: WITH RECURSIVE over a stored call graph answers which services can reach a changed file, and by which calls.

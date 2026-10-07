@@ -1,0 +1,55 @@
+{%- comment -%}
+  03 calls. How the frontends decide a call's target, on three calls of the route, in route order:
+  - webapp +page.svelte:11 searchClient.call(…): the checker follows the import to
+    index.ts:19 `export const searchClient = $gateway.getClientHandler('search')`; the
+    bff-gateway [[handler]] rule (factories getClientHandler, methods call, ...) makes it a
+    handler; CGF: STATIC -> index.ts:searchClient.
+  - federation graph/graph.go:93 r.client.GetAccount(…): an invoke on pb.AccountClient;
+    panoptife-go internal/flow/flow.go remoteContract: a named interface "<Svc>Client" (not
+    bare "Client"), its package path matching --pb-paths (default pb, api); CGF: INVOKES_REMOTE
+    pb.Account/GetAccount. Otherwise the call graph (VTA by default, CHA, or none) gives the
+    targets: 1 -> 1.0, 2-10 -> 1/n, >10 -> no targets.
+  - backend app/app.go:20 i.storage.FindAccountByNumber(…): in SSA a static call; CGF: STATIC,
+    one callee, confidence 1.0.
+  Measured: federation and backend re-extracted with pc-fe --dispatch off, cha and vta
+  (panoptife-go 17075c5), run with webapp, give the same 15 findings.
+{%- endcomment -%}
+<section class="step" id="calls" aria-labelledby="calls-h">
+  <p class="kicker">03 · frontends</p>
+  <h2 class="h2" id="calls-h">Find out where each call goes</h2>
+  <p class="lead">A map ends at its calls, so the frontend must also say where each call lands. The text does not always tell. A name imported from another file could be anything a library made. A method on an interface could belong to any type behind it. Three calls on the route, one of each kind:</p>
+
+  <figure class="fig" aria-labelledby="calls-cap">
+    <div class="dc">
+      <div class="dc__card">
+        <p class="label"><span class="fe-dot fe-dot--ts" aria-hidden="true"></span>browser · +page.svelte:11</p>
+        <code class="dc__call">searchClient.call({ token: q })</code>
+        <ol class="dc__steps">
+          <li class="dc__q"><b>Where does <code>searchClient</code> come from?</b><span>imported from the BFF's endpoint file</span></li>
+          <li class="dc__q"><b>What is it there?</b><span><code>$gateway.getClientHandler('search')</code>: made by a library</span></li>
+          <li class="dc__q"><b>What does the adapter say?</b><span><code>getClientHandler</code> makes a handler, <code>.call</code> calls it</span></li>
+        </ol>
+        <p class="dc__t">→ <code>searchClient</code><span>the handler function from step 01</span></p>
+      </div>
+      <div class="dc__card">
+        <p class="label"><span class="fe-dot fe-dot--go" aria-hidden="true"></span>federation · graph/graph.go:93</p>
+        <code class="dc__call">r.client.GetAccount(ctx, …)</code>
+        <ol class="dc__steps">
+          <li class="dc__q"><b>What is <code>r.client</code>?</b><span>a <code>pb.AccountClient</code>: an interface</span></li>
+          <li class="dc__q"><b>A generated gRPC client?</b><span>named <code>&lt;Service&gt;Client</code>, in package <code>pb</code>: yes</span></li>
+        </ol>
+        <p class="dc__t dc__t--k">→ <code>◆ pb.Account/GetAccount</code><span>a call into another service: step 04</span></p>
+      </div>
+      <div class="dc__card">
+        <p class="label"><span class="fe-dot fe-dot--go" aria-hidden="true"></span>backend · app/app.go:20</p>
+        <code class="dc__call">i.storage.FindAccountByNumber(…)</code>
+        <ol class="dc__steps">
+          <li class="dc__q"><b>What is <code>i.storage</code>?</b><span>a <code>*store.Storage</code>: a concrete type</span></li>
+          <li class="dc__q"><b>Its method <code>FindAccountByNumber</code>?</b><span>exactly one</span></li>
+        </ol>
+        <p class="dc__t">→ <code>FindAccountByNumber</code><span>one target, certain</span></p>
+      </div>
+    </div>
+    <figcaption class="cap" id="calls-cap">Most calls are like the last one. When an interface could hide several types, the Go frontend keeps the ones that can actually reach the variable and splits the confidence between them, 1/n each. With more than ten, it gives up, and the engine treats the call like a library call it cannot see into (step 07).</figcaption>
+  </figure>
+</section>

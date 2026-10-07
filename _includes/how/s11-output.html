@@ -1,0 +1,61 @@
+{%- comment -%}
+  11 output. The command is the panopticode README's quickstart on the example's three
+  repositories. The 15 findings, grouped (re-run, panopticode d0fd50d): webapp +page.svelte,
+  +page.server.ts:load and searchClient -> graphql:Query.searchByToken, pb.Account/GetAccount ->
+  backend Selectx (3); webapp +page.svelte -> goto (open_redirect) and svelte:html (xss) (2);
+  federation SearchByToken, Details, DetailsViaHelper, DetailsViaLocalClient -> pb.Account/GetAccount,
+  StreamDetails -> pb.Feed/Download, SendUpload -> pb.Feed/Upload, each to backend Selectx (6);
+  federation StreamDetails -> pb.Feed/Download and back -> federation Selectx (1); backend
+  GetAccount, Download, Upload on their own -> backend Selectx (3). Caching: summary_key =
+  H(bid, source_params, callee contract_hashes) (core/src/ids.rs), so a behaviour-preserving
+  edit stops at the edited function.
+{%- endcomment -%}
+<section class="step" id="output" aria-labelledby="output-h">
+  <p class="kicker">11 · findings</p>
+  <h2 class="h2" id="output-h">What you get</h2>
+  <p class="lead">One JSON array, one entry per finding, each with its whole route. On the example's three repositories that is 15 findings. The route this page followed is one of the first three.</p>
+
+  <figure class="fig term" aria-label="The command">
+<pre class="code"><code><span class="muted">$</span> panopticode taint --catalog catalog.example.toml \
+    --cgf testdata/cgf/webapp --cgf testdata/cgf/federation --cgf testdata/cgf/backend \
+    &gt; chains.json</code></pre>
+  </figure>
+
+  <div class="fo__wrap">
+    <table class="fo">
+      <caption class="label">The 15 findings of the example</caption>
+      <thead><tr><th scope="col">starts in</th><th scope="col">crosses</th><th scope="col">ends at</th><th scope="col">findings</th></tr></thead>
+      <tbody>
+        <tr class="fo__me"><td><b>webapp</b>: the page's <code>?q=</code>, the server <code>load</code>, the BFF endpoint</td><td>◆ GraphQL, ◆ gRPC</td><td>backend: SQL</td><td>3</td></tr>
+        <tr><td><b>webapp</b>: the page</td><td class="muted">nothing</td><td>the page: <code>goto(q)</code>, open redirect; <code>{@html res}</code>, XSS</td><td>2</td></tr>
+        <tr><td><b>federation</b>: its resolvers</td><td>◆ gRPC, plain and streaming</td><td>backend: SQL</td><td>6</td></tr>
+        <tr><td><b>federation</b>: a resolver that streams</td><td>◆ gRPC stream, there and back</td><td>federation: SQL</td><td>1</td></tr>
+        <tr><td><b>backend</b>: its gRPC handlers</td><td class="muted">nothing</td><td>backend: SQL</td><td>3</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="duo">
+    <div class="box">
+      <span class="label">Read a finding carefully</span>
+      <ul class="box__list">
+        <li><b>A finding is a route, not an exploit.</b> <code>sqli</code> means untrusted data reaches a call that runs SQL. Passed as a parameter of a prepared query, that is harmless, and it is still reported. panopticode never runs your code.</li>
+        <li><b>The catalog bounds recall.</b> What it does not name is not looked for. Every run also prints the calls it could not see into; read that list on every new codebase.</li>
+        <li><b>Scope matters.</b> Code the frontend did not read has no map. A sink behind it is invisible.</li>
+        <li><b>gRPC and GraphQL only, for now.</b> Plain HTTP between services, queues, caches and database round trips are not followed.</li>
+      </ul>
+      <a class="box__link" href="https://github.com/panoptiorg/panopticode/blob/main/docs/limitations.md">→ docs/limitations.md</a>
+    </div>
+    <div class="box">
+      <span class="label">Beyond findings</span>
+      <span class="box__text"><code>panopticode impact</code> re-extracts one repository at a merge request's head, reuses the cached summaries of everything the change did not touch, and reports the routes it did. Summaries are cached by what the callees <i>do</i>, not by their code, so an edit that keeps a function's behaviour invalidates nothing above it. With <code>--pg</code>, the call graph and the contract summaries go to Postgres, and <code>panopticode query</code> answers questions over them: which services can reach these changed files, and by which calls.</span>
+    </div>
+  </div>
+
+  <nav class="docs" aria-label="Documentation">
+    <a class="card" href="https://github.com/panoptiorg/panopticode/blob/main/docs/architecture.md"><span class="label">docs</span><span class="card__title">Architecture</span><span class="card__text">The engine, in depth.</span></a>
+    <a class="card" href="https://github.com/panoptiorg/panopticode/blob/main/docs/catalog.md"><span class="label">docs</span><span class="card__title">Catalog</span><span class="card__text">Sources, sinks, sanitizers, propagators.</span></a>
+    <a class="card" href="https://github.com/panoptiorg/panopticode/blob/main/docs/cgf.md"><span class="label">docs</span><span class="card__title">CGF</span><span class="card__text">The format, for frontend authors.</span></a>
+    <a class="card" href="https://github.com/panoptiorg/panopticode/blob/main/docs/cli.md"><span class="label">docs</span><span class="card__title">CLI</span><span class="card__text">Every command, flag and exit code.</span></a>
+  </nav>
+</section>

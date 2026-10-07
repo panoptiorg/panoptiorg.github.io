@@ -1,0 +1,28 @@
+{%- comment -%}
+  10 confirm. Real verdicts on the example (three repositories): with --backward-unview, 13
+  findings confirmed, 2 undecided (the two through gRPC streams: SendUpload, and StreamDetails
+  back to the federation's SQL), 0 refuted; route a956a2f72f24 is confirmed. With plain
+  --backward it is undecided: the walk will not cross the GraphQL contract, whose view is not the
+  resolver's own frame. The rows show the demand --backward-unview carries, sink to source; the
+  engine organises the same walk top-down from the source function (core/src/backward.rs).
+{%- endcomment -%}
+<section class="step" id="confirm" aria-labelledby="confirm-h">
+  <p class="kicker">10 · findings · optional</p>
+  <h2 class="h2" id="confirm-h">Check it backwards</h2>
+  <p class="lead">With <code>--backward</code>, the engine checks every finding a second time, from the other end. It starts at the sink and follows the data back through the real maps of each function, not the summaries, keeping track of exactly which value and field it needs. If it reaches a source, the finding is <b>confirmed</b>. If it runs out of places to look, it is <b>refuted</b>. If it meets something it cannot model, it stays <b>undecided</b>.</p>
+
+  <figure class="fig" aria-labelledby="confirm-cap">
+    <ol class="bk">
+      <li class="bk__r"><span class="bk__f"><span class="taint">■</span> <code>findBy</code></span><span class="bk__c"><code>Selectx(q)</code>, where <code>q = pred + args[0]</code></span><span class="bk__w">look for <code>args[0]</code></span></li>
+      <li class="bk__r"><span class="bk__f"><code>FindAccountByNumber</code></span><span class="bk__c"><code>findBy("number = ?", number)</code></span><span class="bk__w">look for <code>number</code></span></li>
+      <li class="bk__r"><span class="bk__f"><code>GetAccount</code></span><span class="bk__c"><code>FindAccountByNumber(req.GetNumber())</code></span><span class="bk__w">look for <code>req.Number</code></span></li>
+      <li class="bk__r bk__r--k"><span class="bk__f"><code>◆ pb.Account/GetAccount</code></span><span class="bk__c">the same request on both sides</span><span class="bk__w">look for <code>req.Number</code></span></li>
+      <li class="bk__r"><span class="bk__f"><code>SearchByToken</code></span><span class="bk__c"><code>GetAccountRequest{Number: token}</code></span><span class="bk__w">look for <code>token</code></span></li>
+      <li class="bk__r bk__r--k"><span class="bk__f"><code>◆ graphql:Query.searchByToken</code></span><span class="bk__c">the client's argument <code>token</code></span><span class="bk__w">look for <code>token</code></span></li>
+      <li class="bk__r"><span class="bk__f"><code>$op</code> · <code>searchClient</code></span><span class="bk__c">passed straight through</span><span class="bk__w">look for the handler's input</span></li>
+      <li class="bk__r"><span class="bk__f"><code>+page.svelte</code></span><span class="bk__c"><code>searchClient.call({ token: q })</code></span><span class="bk__w">look for <code>q</code></span></li>
+      <li class="bk__r bk__r--ok"><span class="bk__f"><span class="taint">●</span> <code>+page.svelte</code></span><span class="bk__c"><code>q = $page.url.searchParams.get('q')</code></span><span class="bk__w ok">a source: confirmed</span></li>
+    </ol>
+    <figcaption class="cap" id="confirm-cap">The same route as step 09, read from the sink back. Crossing the GraphQL contract needs <code>--backward-unview</code>, which maps the resolver's parameters back onto the client's arguments (the resolver takes <code>ctx</code> first); plain <code>--backward</code> stops there and leaves this finding undecided. With it, 13 of the example's 15 findings are confirmed and 2 stay undecided, both through gRPC streams; none is refuted. Refuted findings are dropped only if you ask (<code>--backward-prune</code>).</figcaption>
+  </figure>
+</section>

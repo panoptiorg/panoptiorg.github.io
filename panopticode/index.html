@@ -1,6 +1,105 @@
 ---
-title: panopticode
-description: Compositional taint analysis across repositories and services, over a language-neutral code graph. The engine, in Rust.
+title: How panopticode works
+description: Frontends turn each repository's code into facts; the engine joins the facts of all of them and follows untrusted data across services. Eleven steps on one real route, from a search box to a SQL query two services away.
 nav: panopticode
+styles:
+  - /assets/css/how.css
+scripts:
+  - /assets/js/how.js
 ---
-{% include soon.html kicker="panopticode" %}
+{%- comment -%}
+  How panopticode works: the pipeline in one picture, the example route, then eleven steps in
+  three parts with a rail beside them. Every name, number, hash and route here is real output of
+  panopticode on the example system (_data/how.json says how it was made; tools/how.test.mjs
+  recomputes the hashes). The page is static: src/js/how.js only adds the code tabs, the rail and
+  the contract-name check.
+{%- endcomment -%}
+
+<section class="wrap hh">
+  <h1 class="display page-title">How panopticode works</h1>
+  <p class="lead">Two kinds of programs. A <b>frontend</b> knows one language and its libraries: it reads one repository and writes down facts about its code. The <b>engine</b> knows no language at all: it reads the facts of all your repositories at once and finds the routes untrusted data can take to a dangerous call.</p>
+
+  <figure class="pl" aria-label="The pipeline: repositories, frontends, facts, engine, findings">
+    <ol class="pl__row">
+      <li class="pl__st">
+        <p class="label">your repositories</p>
+        <p class="pl__repo"><span class="fe-dot fe-dot--ts" aria-hidden="true"></span>webapp</p>
+        <p class="pl__repo"><span class="fe-dot fe-dot--go" aria-hidden="true"></span>federation</p>
+        <p class="pl__repo"><span class="fe-dot fe-dot--go" aria-hidden="true"></span>backend</p>
+      </li>
+      <li class="pl__st pl__st--box">
+        <p class="label"><a href="#part1">frontends</a></p>
+        <p class="pl__t">one per language</p>
+        <p class="pl__d"><b>panoptife-ts</b> TypeScript, Svelte, GraphQL clients</p>
+        <p class="pl__d"><b>panoptife-go</b> Go, gRPC, gqlgen</p>
+      </li>
+      <li class="pl__st">
+        <p class="label"><a href="#facts">facts</a></p>
+        <p class="pl__t">CGF files</p>
+        <p class="pl__d">functions, how data moves in them, their calls</p>
+      </li>
+      <li class="pl__st pl__st--box pl__st--eng">
+        <p class="label"><a href="#part2">engine</a></p>
+        <p class="pl__t">panopticode</p>
+        <p class="pl__d">+ the catalog: which calls are sources, sinks, sanitizers</p>
+      </li>
+      <li class="pl__st pl__st--out">
+        <p class="label"><a href="#part3">findings</a></p>
+        <p class="pl__t">routes</p>
+        <p class="pl__d"><span class="taint">?q=</span> → … → <span class="taint">SQL</span>, hop by hop</p>
+      </li>
+    </ol>
+  </figure>
+</section>
+
+{% include how/s00-example.html %}
+
+<div class="wrap how">
+  <nav class="rail" data-rail aria-label="Steps">
+    <ol>
+      <li><a href="#functions" data-n="01">01 functions</a></li>
+      <li><a href="#flow" data-n="02">02 flow</a></li>
+      <li><a href="#calls" data-n="03">03 calls</a></li>
+      <li class="rail__s--bnd"><a href="#contracts" data-n="04">04 contracts</a></li>
+      <li><a href="#facts" data-n="05">05 facts</a></li>
+      <li><a href="#load" data-n="06">06 load</a></li>
+      <li><a href="#summarize" data-n="07">07 summarize</a></li>
+      <li class="rail__s--bnd"><a href="#connect" data-n="08">08 connect</a></li>
+      <li><a href="#route" data-n="09">09 route</a></li>
+      <li><a href="#confirm" data-n="10">10 confirm</a></li>
+      <li class="rail__s--snk"><a href="#output" data-n="11">11 output</a></li>
+    </ol>
+  </nav>
+
+  <div class="how__main">
+    <header class="part" id="part1" aria-labelledby="part1-h">
+      <p class="kicker">Part 1 · the frontends</p>
+      <h2 class="h2" id="part1-h">Code becomes facts.</h2>
+      <p class="lead">One frontend per language. Each one knows its language and the libraries that move data between services, such as gRPC, GraphQL and SvelteKit. It writes down what the code does. The only security fact it records is the one only it can see: which parameters receive requests, such as a handler's input or a resolver's arguments. Every other rule, what counts as a source, a sink or a sanitizer, comes from the catalog, which only the engine reads (step 06).</p>
+    </header>
+    {% include how/s01-functions.html %}
+    {% include how/s02-flow.html %}
+    {% include how/s03-calls.html %}
+    {% include how/s04-contracts.html %}
+    {% include how/s05-facts.html %}
+
+    <header class="part" id="part2" aria-labelledby="part2-h">
+      <p class="kicker">Part 2 · the engine</p>
+      <h2 class="h2" id="part2-h">Facts become summaries.</h2>
+      <p class="lead">The engine is one Rust program. It loads the facts of any number of repositories and one policy file, and works out what every function does with untrusted data.</p>
+    </header>
+    {% include how/s06-load.html %}
+    {% include how/s07-summarize.html %}
+    {% include how/s08-connect.html %}
+
+    <header class="part" id="part3" aria-labelledby="part3-h">
+      <p class="kicker">Part 3 · the findings</p>
+      <h2 class="h2" id="part3-h">Summaries become routes.</h2>
+      <p class="lead">A summary says that data gets through, not how. The last steps rebuild the how, hop by hop, and can check it a second time from the other end.</p>
+    </header>
+    {% include how/s09-route.html %}
+    {% include how/s10-confirm.html %}
+    {% include how/s11-output.html %}
+  </div>
+</div>
+

@@ -1,0 +1,43 @@
+{%- comment -%}
+  05 facts. The facts of (*queryResolver).SearchByToken in the golden CGF
+  (testdata/cgf/federation, panoptife-go cmd/cgfdump -flow), written out in words: iid
+  208c2cf2d9c4, src_params [1], binds 1, call site 0 INVOKES_REMOTE pb.Account/GetAccount with 3
+  arguments, and its seven LocalFlow edges (receiver [client] -> arg 0, param 0 -> arg 1, param 1
+  -> arg 2 [Number], result 0 [Account] -> return 0, result 0 -> return 1, result 1 -> return 1;
+  cgfdump lists the [Account] edge twice, from two vertices). Colours as in step 02. The iid is
+  panoptife-go's IID(repo, package, fn, signature); tools/how.test.mjs recomputes it.
+  Counts from `panopticode graph-dump` on testdata/cgf/{webapp,federation,backend}: 11 files,
+  56 functions, 7 contracts; 75 call sites, 15 of them remote.
+{%- endcomment -%}
+<section class="step" id="facts" aria-labelledby="facts-h">
+  <p class="kicker">05 · frontends</p>
+  <h2 class="h2" id="facts-h">Write it all down as facts</h2>
+  <p class="lead">Everything a frontend learned goes to disk as <b>CGF</b>, code graph facts: protobuf files, one per Go package or TypeScript directory. From here on nothing reads source code again. That is why the engine needs no change for a new language: a new frontend that writes the same facts is enough. Here is all the engine will ever know about <code>SearchByToken</code>:</p>
+
+  <div class="duo2 duo2--facts">
+    <figure class="fig" aria-label="The facts of SearchByToken">
+<pre class="code facts"><code><span class="muted">function</span>   (*queryResolver).SearchByToken
+<span class="muted">id</span>         {{ site.data.how.iid.id }} <span class="muted"># a hash of repo, package, name, signature</span>
+<span class="muted">untrusted</span>  <span class="v3">parameter 1</span>
+<span class="muted">serves</span>     ◆ graphql:Query.searchByToken
+<span class="muted">call 0</span>     ◆ pb.Account/GetAccount, 3 arguments
+
+<span class="muted">map</span>
+  <span class="v1">receiver .client</span>          → call 0, argument 0
+  <span class="v2">parameter 0</span>               → call 0, argument 1
+  <span class="v3">parameter 1</span>               → call 0, argument 2 .Number
+  <span class="v4">call 0, result 0 .Account</span> → return 0
+  <span class="v4">call 0, result 0</span>          → return 1
+  <span class="v5">call 0, result 1</span>          → return 1</code></pre>
+      <figcaption class="cap">No source text, no variable names: positions, fields and calls. "untrusted" is the one security fact a frontend writes. The line from result 0 to return 1 is the one step 02 left out.</figcaption>
+    </figure>
+
+    <figure class="fig" aria-label="The example system's facts">
+<pre class="code facts"><code><b>cgf/</b>
+├ <b>webapp/</b>      <span class="fe-dot fe-dot--ts" aria-hidden="true"></span>3 files ·  9 functions
+├ <b>federation/</b>  <span class="fe-dot fe-dot--go" aria-hidden="true"></span>5 files · 24 functions
+└ <b>backend/</b>     <span class="fe-dot fe-dot--go" aria-hidden="true"></span>3 files · 23 functions</code></pre>
+      <figcaption class="cap">The whole example: 11 files, 56 functions, 49 KB.</figcaption>
+    </figure>
+  </div>
+</section>

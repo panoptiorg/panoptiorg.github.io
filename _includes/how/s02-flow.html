@@ -1,0 +1,42 @@
+{%- comment -%}
+  02 flow. The LocalFlow of (*queryResolver).SearchByToken as pc-fe writes it (golden CGF
+  testdata/cgf/federation, cgfdump -flow): IN_RECEIVER r [client] -> ARG 0; IN_PARAM 0 ctx ->
+  ARG 1; IN_PARAM 1 token -> ARG 2 [Number]; RESULT 0 [Account] -> OUT_RETURN 0; RESULT 1 ->
+  OUT_RETURN 1. One edge is left out and the caption says so: RESULT 0, which also stands for
+  the whole result, reaches OUT_RETURN 1 too (step 05 lists it). pc-fe computes the edges by a
+  breadth-first search over the function's SSA values (panoptife-go internal/flow/flow.go).
+  Colours: .v1 receiver, .v2 ctx, .v3 token (the tainted value, so red), .v4 the call's answer,
+  .v5 its error. A value keeps its colour in the code, the map and step 05.
+{%- endcomment -%}
+<section class="step" id="flow" aria-labelledby="flow-h">
+  <p class="kicker">02 · frontends</p>
+  <h2 class="h2" id="flow-h">Map how data moves inside each function</h2>
+  <p class="lead">For every function, the frontend follows each value from where it comes in (a parameter, the receiver, what a call returns) to where it goes out (a return, an argument of a call). The result is a small map. One rule matters more than any other: <b>no line crosses a call.</b> What the callee does with its inputs is not known yet, so the map stops at the call's inputs and starts again at its outputs. The engine fills that gap later, and a call to another service is just one more gap.</p>
+
+  <figure class="fig" aria-labelledby="flow-cap">
+    <div class="stack">
+      <div class="pane pane--go">
+        <p class="pane__h">federation · graph/graph.go:92-98</p>
+<pre class="code code--wrap"><code>func (<span class="v1">r</span> *queryResolver) SearchByToken(<span class="v2">ctx</span> context.Context, <span class="v3">token</span> string) (string, error) {
+	<span class="v4">resp</span>, <span class="v5">err</span> := <span class="v1">r.client</span>.<u>GetAccount</u>(<span class="v2">ctx</span>, &amp;pb.GetAccountRequest{Number: <span class="v3">token</span>})
+	if <span class="v5">err</span> != nil {
+		return "", <span class="v5">err</span>
+	}
+	return <span class="v4">resp.Account</span>, nil
+}</code></pre>
+      </div>
+
+      <div class="lf" role="group" aria-label="The map of SearchByToken">
+        <p class="lf__h label"><span>comes in</span><span>goes into the call to <code>GetAccount</code></span></p>
+        <div class="lf__r v1"><span class="port"><b>r.client</b><span>receiver</span></span>{% include how/wire.html %}<span class="port"><b>r.client</b><span>argument 0</span></span></div>
+        <div class="lf__r v2"><span class="port"><b>ctx</b><span>parameter 0</span></span>{% include how/wire.html %}<span class="port"><b>ctx</b><span>argument 1</span></span></div>
+        <div class="lf__r v3"><span class="port"><b><span class="an__s" aria-hidden="true">●</span> token</b><span>parameter 1 · untrusted</span></span>{% include how/wire.html %}<span class="port"><b>request.Number</b><span>argument 2, field Number</span></span></div>
+        <p class="wall"><span>no line crosses the call: what <code>GetAccount</code> does is not known here</span></p>
+        <p class="lf__h label"><span>comes out of the call</span><span>goes out</span></p>
+        <div class="lf__r v4"><span class="port"><b>resp</b><span>result 0</span></span>{% include how/wire.html %}<span class="port"><b>resp.Account</b><span>return 0</span></span></div>
+        <div class="lf__r v5"><span class="port"><b>err</b><span>result 1</span></span>{% include how/wire.html %}<span class="port"><b>err</b><span>return 1</span></span></div>
+      </div>
+    </div>
+    <figcaption class="cap" id="flow-cap"><span class="taint">●</span> <code>token</code> is an argument of a GraphQL resolver, so the frontend marks it untrusted: it is where requests come in. The map is simplified by one line: <code>resp</code>, as the whole answer, also reaches return 1. Step 05 shows the map exactly as it is written down.</figcaption>
+  </figure>
+</section>

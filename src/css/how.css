@@ -1,0 +1,1868 @@
+/* /panopticode: how it works. Loaded only there (styles: in its front matter), after site.css,
+   whose tokens it uses. A hero with the pipeline, the example route and its code, then a rail
+   beside eleven steps. Every figure is static; src/js/how.js only adds the code tabs, the rail
+   and the contract check.
+
+   Colour: red is the tainted value and nothing else, green is the engine and what it confirms,
+   blue marks a frontend's language. Steps 02 and 05 give each value of SearchByToken its own
+   colour (.v1 to .v5), the same in the code, the map and the facts. */
+
+/* hero: the title, one paragraph, the pipeline */
+
+.hh {
+  padding-block: 64px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.hh .lead {
+  max-width: 780px;
+}
+
+.pl {
+  margin-top: 16px;
+}
+
+.pl__row {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 32px;
+}
+
+.pl__st {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 14px 0;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.pl__st--box {
+  padding: 14px;
+  background: var(--coal);
+  border: 1px solid var(--iron);
+}
+
+.pl__st--eng {
+  border-color: var(--green);
+}
+
+/* an arrow from the stage before */
+.pl__st + .pl__st::before {
+  content: "→";
+  position: absolute;
+  top: 50%;
+  left: -24px;
+  width: 16px;
+  transform: translateY(-50%);
+  font-family: var(--font-code);
+  color: var(--grey);
+  text-align: center;
+}
+
+.pl__st .label a {
+  color: inherit;
+  text-decoration-color: var(--iron);
+}
+
+.pl__st--eng .label {
+  color: var(--green);
+}
+
+.pl__repo {
+  font-family: var(--font-code);
+  font-size: 13px;
+}
+
+.pl__t {
+  font-family: var(--font-code);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.pl__d {
+  font-size: 13px;
+  line-height: 19px;
+  color: var(--grey);
+}
+
+.pl__d b {
+  color: var(--white);
+  font-family: var(--font-code);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+@media (max-width: 900px) {
+  .pl__row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .pl__st + .pl__st::before {
+    content: "↓";
+    top: -24px;
+    left: 0;
+    transform: none;
+  }
+}
+
+/* the example system: the route first, then its code */
+
+.ex {
+  padding-block: 8px 72px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ex .lead {
+  max-width: 780px;
+}
+
+/* one lane per runtime, the route's functions in red with the value's name under each, the
+   call that carries it between lanes */
+.sp {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.sp__lane {
+  display: grid;
+  grid-template-columns: 150px minmax(0, 1fr);
+  gap: 8px 16px;
+  align-items: center;
+  padding: 12px;
+  background: var(--black);
+  border: 1px solid var(--iron);
+}
+
+.sp__who {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-family: var(--font-code);
+  font-size: 11px;
+  color: var(--grey);
+}
+
+.sp__who b {
+  color: var(--white);
+  font-size: 15px;
+}
+
+.sp__who .fe-dot {
+  margin: 0 0 4px;
+}
+
+.sp__route {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 0;
+}
+
+.sp__route .wire {
+  flex: 0 0 36px;
+  min-width: 36px;
+}
+
+/* a node of the route: its function, and under it the name the value has there */
+.sn {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 6px 10px;
+  border: 1px solid var(--red);
+  border-left-width: 3px;
+  color: var(--white);
+  text-decoration: none;
+}
+
+.sn code {
+  font-size: 13px;
+}
+
+.sn__n {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.sn__v {
+  font-family: var(--font-code);
+  font-size: 11px;
+  color: var(--red);
+}
+
+.sn--src {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.sn--snk {
+  background: var(--oxblood);
+}
+
+.sn--snk .sn__v,
+.sn--snk .an__k {
+  color: var(--white);
+}
+
+a.sn:hover,
+a.sn[aria-current] {
+  background: var(--graphite);
+  color: var(--white);
+}
+
+a.sn--snk:hover,
+a.sn--snk[aria-current] {
+  background: var(--oxblood);
+  outline: 2px solid var(--white);
+  outline-offset: -2px;
+}
+
+.an__s,
+.an__k {
+  color: var(--red);
+  font-family: var(--font-code);
+}
+
+/* between two lanes: a red pixel arrow down, what carries the value, and what that means */
+.sp__hop {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  padding: 4px 0 4px 170px;
+}
+
+.sp__hop .arrow {
+  color: var(--red);
+}
+
+.sk {
+  padding: 4px 8px;
+  border: 1px solid var(--white);
+  font-family: var(--font-code);
+  font-size: 12px;
+}
+
+.sk code {
+  font-size: 12px;
+}
+
+.sk--http {
+  border-color: var(--red);
+}
+
+.sp__via {
+  font-size: 12px;
+  color: var(--grey);
+}
+
+@media (max-width: 760px) {
+  .sp__lane {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .sp__who {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 2px 8px;
+  }
+
+  .sp__hop {
+    padding-left: 16px;
+  }
+
+  /* the route's nodes one under the other, joined by a short vertical dash */
+  .sp__route {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0;
+  }
+
+  .sp__route .wire {
+    flex: none;
+    width: 2px;
+    min-width: 2px;
+    height: 16px;
+    margin: 2px 0 2px 14px;
+  }
+
+  .sp__route .wire i {
+    width: 2px;
+    height: 16px;
+    background: linear-gradient(0deg, currentColor 6px, transparent 6px) 0 0 / 2px 10px repeat-y;
+  }
+
+  .sp__route .head {
+    display: none;
+  }
+}
+
+.arch__key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 20px;
+  font-family: var(--font-code);
+  font-size: 11px;
+  color: var(--grey);
+}
+
+/* the code viewer: one file at a time with the script; every file, one under the other, without */
+
+.exc {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.exc__tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.exc__tabs button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: var(--tap);
+  padding: 0 12px;
+  background: transparent;
+  border: 1px solid var(--iron);
+  color: var(--white);
+  font-family: var(--font-code);
+  font-size: 12px;
+}
+
+.exc__tabs .fe-dot {
+  margin-right: 0;
+}
+
+.exc__tabs [aria-selected=true] {
+  background: var(--white);
+  border-color: var(--white);
+  color: var(--black);
+}
+
+.exc__repo {
+  color: var(--grey);
+}
+
+[aria-selected=true] .exc__repo {
+  color: var(--black);
+}
+
+.exc__file {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  scroll-margin-top: 72px;
+}
+
+.exc__h {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--grey);
+}
+
+.exc__h .fe-dot {
+  margin-right: -4px;
+}
+
+.exc__h a {
+  margin-left: auto;
+}
+
+.exc__code {
+  padding: 12px 0;
+}
+
+/* a line: its real number in the gutter; the route's lines marked, a note on the right */
+.ln {
+  display: block;
+  padding: 0 16px 0 0;
+  border-left: 3px solid transparent;
+}
+
+.ln i {
+  display: inline-block;
+  width: 5ch;
+  padding-right: 2ch;
+  color: var(--iron);
+  font-style: normal;
+  text-align: right;
+  user-select: none;
+}
+
+.ln em {
+  margin-left: 3ch;
+  font-family: var(--font-body);
+  font-size: 12px;
+  font-style: normal;
+  color: var(--red);
+}
+
+.ln--route,
+.ln--src,
+.ln--snk {
+  border-left-color: var(--red);
+  background: rgba(255, 75, 62, 0.07);
+}
+
+.ln--snk {
+  background: rgba(122, 23, 18, 0.45);
+}
+
+.ln--route i,
+.ln--src i,
+.ln--snk i {
+  color: var(--red);
+}
+
+/* small shared pieces */
+
+.tok {
+  display: inline-block;
+  max-width: 24ch;
+  overflow: hidden;
+  padding: 0 6px;
+  border: 1px solid var(--red);
+  color: var(--red);
+  font-family: var(--font-code);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 20px;
+  white-space: pre;
+  text-overflow: ellipsis;
+  vertical-align: middle;
+}
+
+.fe-dot {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  margin-right: 8px;
+  vertical-align: 1px;
+}
+
+.fe-dot--go {
+  background: var(--lang-go);
+}
+
+.fe-dot--ts {
+  background: var(--lang-ts);
+}
+
+.ok {
+  color: var(--green);
+}
+
+.sr {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* pixel connectors: a dashed pixel shaft that stretches, then a stepped head */
+
+.wire {
+  flex: 1 1 24px;
+  min-width: 24px;
+  display: inline-flex;
+  align-items: center;
+  color: var(--grey);
+}
+
+.wire i {
+  flex: 1 1 auto;
+  height: 2px;
+  background: linear-gradient(90deg, currentColor 6px, transparent 6px) 0 0 / 10px 2px repeat-x;
+}
+
+.head {
+  flex: none;
+}
+
+.lit {
+  color: var(--red);
+}
+
+/* the values of SearchByToken: receiver, ctx, token (tainted, so red), the answer, the error */
+
+.v1 {
+  color: #a78bfa;
+}
+
+.v2 {
+  color: #e0b44c;
+}
+
+.v3 {
+  color: var(--red);
+}
+
+.v4 {
+  color: #6ec1f0;
+}
+
+.v5 {
+  color: #f28cb8;
+}
+
+/* layout: the rail beside the steps */
+
+.how {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+}
+
+.how__main {
+  min-width: 0;
+  padding-bottom: 96px;
+}
+
+.rail {
+  position: sticky;
+  top: 0;
+  z-index: 5;
+  margin-inline: calc(-1 * var(--gutter));
+  padding: 10px var(--gutter);
+  background: var(--black);
+  border-bottom: 1px solid var(--iron);
+}
+
+.rail ol {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  justify-content: space-between;
+  gap: 4px;
+}
+
+.rail li {
+  flex: 1 1 0;
+  max-width: 44px;
+}
+
+/* phones and tablets: numbered squares, the done ones red */
+.rail a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 28px;
+  border: 1px solid var(--iron);
+  color: transparent;
+  font-family: var(--font-code);
+  font-size: 0;
+  text-decoration: none;
+}
+
+.rail a::before {
+  content: attr(data-n);
+  color: var(--grey);
+  font-size: 11px;
+}
+
+.rail a[data-s=d] {
+  background: var(--oxblood);
+  border-color: var(--red);
+}
+
+.rail a[data-s=d]::before {
+  color: var(--white);
+}
+
+.rail a[data-s=h] {
+  border-color: var(--red);
+}
+
+.rail a[data-s=h]::before {
+  color: var(--red);
+}
+
+@media (min-width: 1100px) {
+  .how {
+    grid-template-columns: 148px minmax(0, 1fr);
+    gap: 48px;
+  }
+
+  .rail {
+    top: 24px;
+    align-self: start;
+    margin: 72px 0 0;
+    padding: 0;
+    border: 0;
+    background: none;
+  }
+
+  .rail ol {
+    position: relative;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  /* the route: a grey pixel line, filled red as far as the reader has come (--p, set by
+     the script), with a station per step */
+  .rail ol::before,
+  .rail ol::after {
+    content: "";
+    position: absolute;
+    left: 5px;
+    top: 14px;
+    bottom: 14px;
+    width: 2px;
+    background: var(--iron);
+  }
+
+  .rail ol::after {
+    background: var(--red);
+    transform: scaleY(var(--p, 0));
+    transform-origin: top;
+    transition: transform 320ms cubic-bezier(0.2, 0.7, 0.2, 1);
+  }
+
+  .rail li {
+    max-width: none;
+  }
+
+  .rail a {
+    position: relative;
+    z-index: 1;
+    justify-content: flex-start;
+    gap: 14px;
+    height: 28px;
+    border: 0;
+    color: var(--grey);
+    font-size: 13px;
+  }
+
+  .rail a::before {
+    content: "";
+    flex: none;
+    width: 12px;
+    height: 12px;
+    background: var(--black);
+    border: 2px solid var(--iron);
+  }
+
+  .rail a:hover {
+    color: var(--green);
+  }
+
+  .rail a[data-s] {
+    background: none;
+  }
+
+  .rail a[data-s=d] {
+    color: var(--white);
+  }
+
+  .rail a[data-s=d]::before {
+    background: var(--red);
+    border-color: var(--red);
+  }
+
+  .rail a[data-s=h] {
+    color: var(--red);
+  }
+
+  .rail a[data-s=h]::before {
+    border-color: var(--red);
+  }
+
+  .rail__s--bnd a::before {
+    transform: rotate(45deg) scale(0.85);
+  }
+
+  .rail__s--snk a::before {
+    width: 14px;
+    height: 14px;
+    margin-left: -1px;
+  }
+}
+
+/* parts and steps */
+
+.part {
+  margin-top: 96px;
+  padding-top: 40px;
+  border-top: 1px solid var(--iron);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  scroll-margin-top: 56px;
+}
+
+.part:first-child {
+  margin-top: 64px;
+}
+
+.part .lead {
+  max-width: 780px;
+}
+
+.step {
+  padding-top: 80px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  scroll-margin-top: 56px;
+}
+
+.step .lead {
+  max-width: 780px;
+}
+
+.step .lead code,
+.more code,
+.cap code {
+  font-size: 0.9em;
+}
+
+/* a paragraph that belongs to the step but not to one figure */
+.more {
+  max-width: 780px;
+  padding-left: 16px;
+  border-left: 2px solid var(--iron);
+  font-size: 15px;
+  line-height: 24px;
+  color: var(--grey);
+}
+
+/* figures */
+
+.fig {
+  min-width: 0;
+  padding: 20px;
+  background: var(--coal);
+  border: 1px solid var(--iron);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.cap {
+  max-width: 860px;
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--grey);
+}
+
+.cap b {
+  color: var(--white);
+}
+
+.fig .label {
+  color: var(--grey);
+}
+
+/* code */
+
+.duo2 {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(380px, 100%), 1fr));
+  gap: 16px;
+}
+
+.duo2--wide {
+  grid-template-columns: repeat(auto-fit, minmax(min(440px, 100%), 1fr));
+}
+
+.pane {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 2px solid var(--iron);
+}
+
+.pane--go {
+  border-top-color: var(--lang-go);
+}
+
+.pane__h {
+  padding: 8px 0;
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--grey);
+}
+
+.code {
+  margin: 0;
+  padding: 14px 16px;
+  tab-size: 4;
+  background: var(--black);
+  border: 1px solid var(--iron);
+  font-size: 13px;
+  line-height: 21px;
+  white-space: pre;
+  overflow-x: auto;
+}
+
+.code--wrap {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.code .muted {
+  color: var(--grey);
+}
+
+.code u {
+  text-decoration-color: var(--grey);
+  text-underline-offset: 3px;
+}
+
+/* 01 functions: what the text says, an arrow, what the frontend writes, and why */
+
+.rw {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.rw__row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 32px minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  padding-block: 20px;
+  border-top: 1px solid var(--iron);
+}
+
+.rw__row:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.rw__k {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.rw__k .muted {
+  font-family: var(--font-code);
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.rw__n {
+  flex: none;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--grey);
+  font-family: var(--font-code);
+  font-size: 12px;
+  line-height: 22px;
+  text-align: center;
+}
+
+.rw__a,
+.rw__b {
+  align-self: stretch;
+}
+
+.rw__b {
+  border-color: var(--grey);
+}
+
+.rw__b b {
+  font-weight: 400;
+}
+
+.rw__to {
+  font-family: var(--font-code);
+  font-size: 18px;
+  color: var(--grey);
+  text-align: center;
+}
+
+.rw__why {
+  grid-column: 1 / -1;
+  max-width: 860px;
+  font-size: 15px;
+  line-height: 24px;
+  color: var(--grey);
+}
+
+.rw__why b {
+  color: var(--white);
+}
+
+.rw__why code {
+  font-size: 0.9em;
+}
+
+.rw__why > * + * {
+  margin-top: 10px;
+}
+
+.rw__ad {
+  width: fit-content;
+  max-width: 100%;
+  font-size: 12px;
+  line-height: 19px;
+}
+
+@media (max-width: 760px) {
+  .rw__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .rw__to {
+    transform: rotate(90deg);
+  }
+}
+
+/* 02 flow: the code, and under it the map of the function, the call's wall across the middle */
+
+.stack {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.lf {
+  min-width: 0;
+  max-width: 820px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.lf__h,
+.lf__r {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr);
+  align-items: center;
+}
+
+.lf__h {
+  align-items: end;
+}
+
+.lf__h span:last-child {
+  grid-column: 3;
+}
+
+.lf__h code {
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.port {
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 2px 8px;
+  padding: 8px 10px;
+  background: var(--black);
+  border: 1px solid var(--iron);
+  border-left: 3px solid currentColor;
+  font-family: var(--font-code);
+  font-size: 11px;
+  line-height: 16px;
+}
+
+.port b {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.port > span {
+  color: var(--grey);
+}
+
+.lf__r .wire {
+  padding-inline: 4px;
+  color: inherit;
+}
+
+/* two rows of pixel bricks, offset by half a brick; the rule written under them */
+.wall {
+  margin-block: 8px;
+  padding-top: 22px;
+  background-image:
+    linear-gradient(90deg, var(--grey) 8px, transparent 8px),
+    linear-gradient(90deg, var(--grey) 8px, transparent 8px);
+  background-size: 10px 6px;
+  background-position: 0 0, 5px 8px;
+  background-repeat: repeat-x;
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--white);
+  text-align: center;
+}
+
+.wall code {
+  font-size: 12px;
+}
+
+/* 03 calls: three decisions, question by question, ending in the call's target */
+
+.dc {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr));
+  gap: 12px;
+  align-items: start;
+}
+
+.dc__card {
+  min-width: 0;
+  padding: 14px;
+  background: var(--black);
+  border: 1px solid var(--iron);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dc__card .label .fe-dot {
+  margin-right: 6px;
+}
+
+.dc__call {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.dc__steps {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.dc__q {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-left: 10px;
+  border-left: 2px solid var(--iron);
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.dc__q b {
+  font-weight: 600;
+}
+
+.dc__q span {
+  color: var(--grey);
+}
+
+.dc__q code,
+.dc__t code {
+  font-size: 0.92em;
+}
+
+.dc__t {
+  display: block;
+  padding: 8px 10px;
+  border: 1px solid var(--green);
+  font-size: 14px;
+}
+
+.dc__t span {
+  display: block;
+  padding-top: 2px;
+  font-family: var(--font-code);
+  font-size: 11px;
+  color: var(--grey);
+}
+
+.dc__t--k {
+  border-color: var(--white);
+}
+
+/* 04 contracts: where each side takes the name from, the name, its id, and the link */
+
+.np {
+  padding: 0 2px;
+  background: none;
+  color: var(--white);
+}
+
+/* the type or service: boxed; the field or method: underlined */
+.np--a {
+  outline: 1px solid var(--white);
+  outline-offset: -1px;
+  background: var(--graphite);
+}
+
+.np--b {
+  text-decoration: underline 2px;
+  text-underline-offset: 4px;
+}
+
+.kn__pair {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 110px minmax(0, 1fr);
+  gap: 16px;
+}
+
+.kn__side {
+  min-width: 0;
+  padding: 16px;
+  background: var(--black);
+  border: 1px solid var(--iron);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kn__side .code {
+  border-color: var(--graphite);
+}
+
+.kn__why {
+  font-size: 14px;
+  line-height: 21px;
+  color: var(--grey);
+  overflow-wrap: anywhere;
+}
+
+.kn__why code {
+  font-size: 0.92em;
+}
+
+.kn__name {
+  margin-top: auto;
+  font-size: 15px;
+  overflow-wrap: anywhere;
+}
+
+.kn__hash {
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--grey);
+  overflow-wrap: anywhere;
+}
+
+.kn__mid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-family: var(--font-code);
+  font-size: 12px;
+  text-align: center;
+}
+
+.kn__d {
+  font-size: 28px;
+  line-height: 1;
+}
+
+[data-match=yes] .kn__d,
+[data-match=yes] .kn__yes,
+[data-match=yes] .kn__hash {
+  color: var(--green);
+}
+
+[data-match=yes] .kn__no,
+[data-match=no] .kn__yes {
+  display: none;
+}
+
+[data-match=no] .kn__d,
+[data-match=no] .kn__no {
+  color: var(--grey);
+}
+
+.kn__try {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px 24px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--iron);
+}
+
+.kn__in {
+  flex: 0 1 380px;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.kn__in input {
+  width: 100%;
+  min-height: var(--tap);
+  padding: 0 10px;
+  background: var(--black);
+  border: 1px solid var(--grey);
+  color: var(--white);
+  font-family: var(--font-code);
+  font-size: 14px;
+}
+
+.kn__in input:focus-visible {
+  outline: 2px solid var(--green);
+}
+
+.kn__out {
+  flex: 1 1 280px;
+  min-height: var(--tap);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 12px;
+  font-family: var(--font-code);
+  font-size: 13px;
+}
+
+[data-match=no] .kn__out {
+  color: var(--grey);
+}
+
+@media (max-width: 760px) {
+  .kn__pair {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .kn__mid {
+    flex-direction: row;
+  }
+}
+
+/* 05 facts */
+
+.duo2--facts {
+  grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.facts {
+  font-size: 12.5px;
+  line-height: 20px;
+}
+
+.facts b {
+  font-weight: 400;
+}
+
+.facts .fe-dot {
+  margin-right: 6px;
+}
+
+@media (max-width: 960px) {
+  .duo2--facts {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 06 load: three repositories, one program, the loose ends; the two rules this route meets */
+
+.jn {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));
+  gap: 24px;
+  align-items: start;
+}
+
+.jn__prog {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.jn__repos {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.jn__repo {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px 12px;
+  background: var(--black);
+  border: 1px solid var(--iron);
+  font-family: var(--font-code);
+  font-size: 11px;
+  color: var(--grey);
+}
+
+.jn__repo b {
+  color: var(--white);
+  font-size: 13px;
+}
+
+.jn__repo .fe-dot {
+  margin-right: 6px;
+}
+
+.jn__sum {
+  padding: 8px 12px;
+  border: 1px solid var(--green);
+  font-family: var(--font-code);
+  font-size: 13px;
+  color: var(--green);
+}
+
+.jn__k {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.jn__k li {
+  padding: 3px 8px;
+  border: 1px dashed var(--grey);
+  font-family: var(--font-code);
+  font-size: 11px;
+  color: var(--grey);
+}
+
+.jn__cat {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.jn__cat .code {
+  font-size: 12px;
+  line-height: 19px;
+}
+
+/* 07 summarize: four summaries in the order they are written; what happens at a call */
+
+.sums {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.sum {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 16px;
+  align-items: baseline;
+  padding: 10px 12px;
+  background: var(--black);
+  border: 1px solid var(--iron);
+}
+
+.sum__h {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  min-width: 0;
+}
+
+.sum__h code {
+  font-size: 13px;
+  overflow-wrap: anywhere;
+}
+
+.sum__n {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  border: 1px solid var(--green);
+  font-family: var(--font-code);
+  font-size: 11px;
+  line-height: 18px;
+  color: var(--green);
+  text-align: center;
+}
+
+.sum__s {
+  font-family: var(--font-code);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.sum__w {
+  grid-column: 1 / -1;
+  padding-left: 30px;
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--grey);
+}
+
+.sum__w code {
+  font-size: 0.92em;
+}
+
+.ask {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 15px;
+  line-height: 23px;
+}
+
+.ask li {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 10px;
+  color: var(--grey);
+}
+
+.ask b {
+  color: var(--white);
+}
+
+.ask code {
+  font-size: 0.9em;
+}
+
+.ask__i {
+  font-family: var(--font-code);
+  color: var(--white);
+  text-align: center;
+}
+
+.ask__i.taint {
+  color: var(--red);
+}
+
+/* 08 connect: one row per round, top to bottom. In each, the route's three repositories left to
+   right with their two contracts between them; red is "reaches SQL", filled is "changed in this
+   round", and the arrow marks a summary copied onto a contract */
+
+.cx {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+}
+
+.cx__row {
+  display: grid;
+  grid-template-columns: minmax(0, 260px) minmax(0, 1fr);
+  gap: 12px 28px;
+  align-items: center;
+  padding-block: 16px;
+  border-top: 1px solid var(--iron);
+}
+
+.cx__row:first-child {
+  padding-top: 0;
+  border-top: 0;
+}
+
+.cx__t {
+  font-size: 14px;
+  line-height: 22px;
+  color: var(--grey);
+}
+
+.cx__t b {
+  display: block;
+  margin-bottom: 2px;
+  font-family: var(--font-code);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--white);
+}
+
+.cx__t code {
+  font-size: 0.9em;
+  color: var(--white);
+  overflow-wrap: anywhere;
+}
+
+.cx__s {
+  display: grid;
+  grid-template-columns:
+    minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 1fr) minmax(0, 0.9fr) minmax(0, 1fr);
+  gap: 6px;
+  align-items: stretch;
+}
+
+.cx__r,
+.cx__k {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 8px 10px;
+  background: var(--black);
+  border: 1px solid var(--iron);
+  font-family: var(--font-code);
+  font-size: 11px;
+  line-height: 15px;
+}
+
+.cx__r b,
+.cx__k b {
+  font-size: 13px;
+  line-height: 18px;
+  color: var(--white);
+}
+
+.cx__r code {
+  font-size: 11px;
+  color: var(--grey);
+  overflow-wrap: anywhere;
+}
+
+.cx__r i,
+.cx__k i {
+  font-style: normal;
+  color: var(--grey);
+}
+
+/* a contract: a dashed link while it is a gap or carries nothing dangerous */
+.cx__k {
+  align-items: center;
+  text-align: center;
+  padding-inline: 6px;
+  border-style: dashed;
+  border-color: var(--grey);
+  background: transparent;
+}
+
+.cx__k i {
+  white-space: nowrap;
+}
+
+.cx__k b {
+  font-size: 12px;
+}
+
+.cx .sql {
+  border: 1px solid var(--red);
+}
+
+.cx .sql i {
+  color: var(--red);
+}
+
+.cx .nw {
+  background: var(--oxblood);
+}
+
+.cx .nw i,
+.cx .nw code {
+  color: var(--white);
+}
+
+/* copied this round: from the handler on the right to the caller on the left */
+.cx__k.nw::before {
+  content: "←";
+  font-size: 16px;
+  line-height: 16px;
+  color: var(--white);
+}
+
+@media (max-width: 760px) {
+  .cx__row {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  /* the strip stays a row: the repositories by name, a contract by its diamond, and colour */
+  .cx__s {
+    grid-template-columns:
+      minmax(0, 1fr) 30px minmax(0, 1fr) 30px minmax(0, 1fr);
+    gap: 4px;
+  }
+
+  .cx__r,
+  .cx__k {
+    padding: 8px 4px;
+    text-align: center;
+  }
+
+  .cx__r b {
+    font-size: 11px;
+  }
+
+  .cx__r code,
+  .cx__r i,
+  .cx__k i,
+  .cx__k b span {
+    display: none;
+  }
+}
+
+/* 09 route: hops, indented one step per descent */
+
+.hops {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.hop {
+  display: grid;
+  grid-template-columns: 11ch 11ch minmax(0, 1fr) auto;
+  gap: 4px 12px;
+  align-items: baseline;
+  padding: 8px 12px;
+  background: var(--black);
+  border: 1px solid var(--iron);
+  border-left: 2px solid var(--red);
+  font-size: 13px;
+}
+
+.hop.d1 { margin-left: 12px; }
+.hop.d2 { margin-left: 24px; }
+.hop.d3 { margin-left: 36px; }
+.hop.d4 { margin-left: 48px; }
+.hop.d5 { margin-left: 60px; }
+.hop.d6 { margin-left: 72px; }
+
+.hop__k {
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--grey);
+}
+
+.hop--source .hop__k,
+.hop--sink .hop__k {
+  color: var(--red);
+}
+
+.hop--boundary .hop__k {
+  color: var(--white);
+}
+
+.hop--sink {
+  background: var(--oxblood);
+  border-color: var(--red);
+}
+
+.hop__r {
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--grey);
+}
+
+.hop--sink .hop__r,
+.hop--sink .muted,
+.hop--sink .taint {
+  color: var(--white);
+}
+
+.hop__f {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.hop__at {
+  font-family: var(--font-code);
+  font-size: 11px;
+}
+
+@media (max-width: 760px) {
+  .hop {
+    grid-template-columns: 11ch minmax(0, 1fr);
+  }
+
+  .hop__f,
+  .hop__at {
+    grid-column: 1 / -1;
+  }
+
+  .hop.d1, .hop.d2, .hop.d3 { margin-left: 6px; }
+  .hop.d4, .hop.d5, .hop.d6 { margin-left: 12px; }
+}
+
+/* 10 confirm: the route read from the sink back, and what the walk looks for at each step */
+
+.bk {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bk__r {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr) minmax(0, 0.9fr);
+  gap: 4px 16px;
+  align-items: baseline;
+  padding: 8px 12px;
+  background: var(--black);
+  border: 1px solid var(--iron);
+  border-left: 2px solid var(--green);
+  font-size: 13px;
+}
+
+.bk__r--k {
+  border-style: dashed;
+  border-left-style: solid;
+}
+
+.bk__r--ok {
+  border-color: var(--green);
+}
+
+.bk__f,
+.bk__c {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.bk__c {
+  color: var(--grey);
+}
+
+.bk__w {
+  font-family: var(--font-code);
+  font-size: 12px;
+  color: var(--grey);
+}
+
+.bk__w code {
+  color: var(--white);
+}
+
+.bk__w.ok {
+  color: var(--green);
+}
+
+@media (max-width: 760px) {
+  .bk__r {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* 11 output */
+
+.term .code {
+  border: 0;
+  padding: 0;
+  background: none;
+  color: var(--white);
+}
+
+.fo__wrap {
+  overflow-x: auto;
+}
+
+.fo {
+  width: 100%;
+  min-width: 620px;
+  border-collapse: collapse;
+  font-size: 14px;
+  line-height: 21px;
+}
+
+.fo caption {
+  padding-bottom: 8px;
+  text-align: left;
+}
+
+.fo th,
+.fo td {
+  padding: 10px 16px 10px 0;
+  border-top: 1px solid var(--iron);
+  text-align: left;
+  vertical-align: top;
+}
+
+.fo thead th {
+  border-top: 0;
+  font-family: var(--font-code);
+  font-size: 11px;
+  font-weight: 400;
+  color: var(--grey);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.fo td:last-child {
+  font-family: var(--font-code);
+  text-align: right;
+}
+
+.fo code {
+  font-size: 0.9em;
+}
+
+.fo__me td:first-child {
+  box-shadow: inset 2px 0 0 var(--red);
+  padding-left: 12px;
+}
+
+.box__list {
+  margin: 0;
+  padding: 0 0 0 1.1em;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 15px;
+  line-height: 24px;
+  color: var(--grey);
+}
+
+.box__list b {
+  color: var(--white);
+}
+
+.box__link {
+  align-self: flex-start;
+  margin-top: 4px;
+  font-family: var(--font-code);
+  font-size: 13px;
+}
+
+
+.docs {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(220px, 100%), 1fr));
+  gap: 16px;
+  margin-top: 16px;
+}
+

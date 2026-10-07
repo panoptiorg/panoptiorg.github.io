@@ -10,8 +10,8 @@ panopticode: >-
   Tarjan pass, callees first. A function outside any cycle is summarised once. A recursive SCC
   starts from empty summaries and is recomputed until nothing changes, capped at
   `4 × |SCC| + 8` iterations. Functions in recursive SCCs are never cached.
-panopticode_link: /panopticode/
-panopticode_link_text: how panopticode works, step 5
+panopticode_link: /panopticode/#summarize
+panopticode_link_text: how panopticode works, step 07
 references:
   - "Tarjan, R. E. (1972). Depth-first search and linear graph algorithms. *SIAM Journal on Computing*, 1(2), 146–160."
   - "[MORE REFERENCES]"

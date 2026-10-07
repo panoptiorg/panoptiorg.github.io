@@ -1,0 +1,45 @@
+{%- comment -%}
+  06 load. The 7 contracts and "7 of 70 rules" are from the taint run on the example's three
+  repositories (catalog-fit: 14 sources, 46 sinks, 6 sanitizers and 4 error wrappers in
+  catalog.example.toml match 7 between them; none of its 22 propagators match). The two rules are
+  catalog.example.toml's, verbatim but for their notes.
+{%- endcomment -%}
+<section class="step" id="load" aria-labelledby="load-h">
+  <p class="kicker">06 · engine</p>
+  <h2 class="h2" id="load-h">Load every repository as one program</h2>
+  <p class="lead">The engine loads the facts of all three repositories into one program. A call into another service is still a loose end: it names a contract, and nothing connects it to the handler on the other side yet. Next to the facts, the engine reads the <b>catalog</b>: the security policy, as data. It names the calls that bring untrusted data in (sources), the dangerous ones (sinks), and the ones that make data safe (sanitizers).</p>
+
+  <figure class="fig" aria-labelledby="load-cap">
+    <div class="jn">
+      <div class="jn__prog">
+        <div class="jn__repos">
+          <p class="jn__repo"><b>webapp</b><span><span class="fe-dot fe-dot--ts" aria-hidden="true"></span>9 functions</span></p>
+          <p class="jn__repo"><b>federation</b><span><span class="fe-dot fe-dot--go" aria-hidden="true"></span>24 functions</span></p>
+          <p class="jn__repo"><b>backend</b><span><span class="fe-dot fe-dot--go" aria-hidden="true"></span>23 functions</span></p>
+        </div>
+        <p class="jn__sum">one program: 56 functions, and 7 contracts not yet connected</p>
+        <ul class="jn__k" aria-label="Contracts">
+          <li>◆ graphql:Query.searchByToken</li>
+          <li>◆ graphql:Account.details</li>
+          <li>◆ graphql:Account.archive</li>
+          <li>◆ pb.Account/GetAccount</li>
+          <li>◆ pb.Account/Archive</li>
+          <li>◆ pb.Feed/Download</li>
+          <li>◆ pb.Feed/Upload</li>
+        </ul>
+      </div>
+      <div class="jn__cat">
+        <p class="label">catalog.example.toml: the two rules this route meets</p>
+<pre class="code"><code><span class="taint">[[sources]]</span>
+kind           = "ts_url_query"
+selector_regex = '^(URLSearchParams|URL)\.(get|getAll)$'
+
+<span class="taint">[[sinks]]</span>
+class          = "sqli"
+selector_regex = '\.(Getx|Selectx|Execx|Queryx|Getxx)$'
+arg            = "any"</code></pre>
+      </div>
+    </div>
+    <figcaption class="cap" id="load-cap">A rule matches the name of the function a call lands in, as the frontend wrote it. The value enters at <code>URLSearchParams.get</code> in the page and ends at <code>Selectx</code> in the backend. Most of the example catalog's rules match nothing in these three repositories; the engine lists those, so you can see what it was not looking for.</figcaption>
+  </figure>
+</section>

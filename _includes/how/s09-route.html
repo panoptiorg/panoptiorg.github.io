@@ -1,0 +1,24 @@
+{%- comment -%}
+  09 route. The nine hops of route a956a2f72f24 from _data/how.json (copied from chains.json),
+  indented one step per descent. tools/how.test.mjs recomputes route.id from those hops.
+{%- endcomment -%}
+{%- assign route = site.data.how.route -%}
+<section class="step" id="route" aria-labelledby="route-h">
+  <p class="kicker">09 · findings</p>
+  <h2 class="h2" id="route-h">Rebuild the route</h2>
+  <p class="lead">The summaries say that the search page reaches SQL, not through which calls. So the engine walks down from the source: in each function it finds the call whose summary produced the hit, steps into that callee, and repeats, across contracts into their handlers, until it stands at the sink. Each step is a <b>hop</b>.</p>
+
+  <figure class="fig" aria-labelledby="route-cap">
+    <ol class="hops">
+      {%- for h in route.hops %}
+      <li class="hop hop--{{ h.kind }} d{{ h.show.depth }}">
+        <span class="hop__k">{% case h.kind %}{% when "source" %}● source{% when "boundary" %}◆ contract{% when "sink" %}■ sink{% else %}call{% endcase %}</span>
+        <span class="hop__r">{{ h.show.repo }}</span>
+        <span class="hop__f"><code>{{ h.show.func }}</code>{% if h.show.callee != "" %} → <code>{{ h.show.callee }}</code>{% endif %}{% if h.field %} <span class="muted">· field {{ h.field }}</span>{% endif %}{% if h.show.note %} <span class="muted">· {{ h.show.note }}</span>{% endif %}{% if h.kind == "sink" %} <span class="taint">· {{ route.class }}</span>{% endif %}</span>
+        <span class="hop__at muted">{{ h.show.at }}</span>
+      </li>
+      {%- endfor %}
+    </ol>
+    <figcaption class="cap" id="route-cap">9 hops, 3 repositories, 2 contracts crossed. This is how the engine prints a finding's route.</figcaption>
+  </figure>
+</section>

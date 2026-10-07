@@ -1,0 +1,70 @@
+{%- comment -%}
+  The example system, before the steps: the three fixture repositories the route crosses, the
+  ones the panopticode README's quickstart loads (panoptife-ts fixtures/webapp, panoptife-go
+  fixtures/federation and fixtures/backend), drawn route-first: the one route the page follows
+  (route a956a2f72f24, finding sqli from +page.svelte), from the user's ?q= through the browser,
+  the BFF, the GraphQL gateway and the Account service to the SQL call in findBy, with the
+  value's name at each hop as the code spells it. Then the exact code of the route
+  (how/example-code.html). Every later step works on this.
+{%- endcomment -%}
+<section class="wrap ex" id="example" aria-labelledby="ex-h">
+  <p class="kicker">The example</p>
+  <h2 class="h2" id="ex-h">One search term, three repositories.</h2>
+  <p class="lead">Everything below runs on the small system that ships with panopticode's frontends: a SvelteKit web app (a page in the browser, and its server, a backend-for-frontend or BFF), a GraphQL gateway in Go, and a gRPC service in Go with a SQL store. We follow one value: the search term a user puts in the page's URL, all the way to a SQL query two services away.</p>
+
+  <figure class="fig arch" aria-labelledby="arch-cap">
+    <ol class="sp">
+      <li class="sp__lane sp__lane--user">
+        <p class="sp__who"><b>user</b><span>types a search term</span></p>
+        <div class="sp__route"><span class="sn sn--src"><span class="sn__n"><span class="an__s" aria-hidden="true">●</span><code>?q=</code></span><span class="tok">' OR 1=1 --</span></span></div>
+      </li>
+
+      <li class="sp__hop">{% include arrow.svg %}<span class="sp__via">the page reads it from its URL</span></li>
+
+      <li class="sp__lane">
+        <p class="sp__who"><span class="fe-dot fe-dot--ts" aria-hidden="true"></span><b>browser</b><span>webapp: the Svelte page</span></p>
+        <div class="sp__route">
+          <a class="sn" href="#ex-page" data-tab="page"><code>+page.svelte</code><span class="sn__v">q = searchParams.get('q')</span></a>
+        </div>
+      </li>
+
+      <li class="sp__hop">{% include arrow.svg %}<span class="sk sk--http"><code>POST /api/search</code></span><span class="sp__via">HTTP, but the page and the BFF live in one repository, so it is a plain call</span></li>
+
+      <li class="sp__lane">
+        <p class="sp__who"><span class="fe-dot fe-dot--ts" aria-hidden="true"></span><b>BFF</b><span>webapp: the SvelteKit server</span></p>
+        <div class="sp__route">
+          <a class="sn" href="#ex-bff" data-tab="bff"><code>searchClient</code><span class="sn__v">{ token: q }</span></a>
+          {% include how/wire.html cls="lit" %}
+          <a class="sn" href="#ex-bff" data-tab="bff"><code>$op</code><span class="sn__v">query Search($token)</span></a>
+        </div>
+      </li>
+
+      <li class="sp__hop">{% include arrow.svg %}<span class="sk">◆ <code>graphql:Query.searchByToken</code></span><span class="sp__via">GraphQL: a call into another repository</span></li>
+
+      <li class="sp__lane">
+        <p class="sp__who"><span class="fe-dot fe-dot--go" aria-hidden="true"></span><b>federation</b><span>the GraphQL gateway · Go</span></p>
+        <div class="sp__route">
+          <a class="sn" href="#ex-resolver" data-tab="resolver"><code>SearchByToken</code><span class="sn__v">token → req.Number</span></a>
+        </div>
+      </li>
+
+      <li class="sp__hop">{% include arrow.svg %}<span class="sk">◆ <code>pb.Account/GetAccount</code></span><span class="sp__via">gRPC: another repository again</span></li>
+
+      <li class="sp__lane">
+        <p class="sp__who"><span class="fe-dot fe-dot--go" aria-hidden="true"></span><b>backend</b><span>the Account service · Go</span></p>
+        <div class="sp__route">
+          <a class="sn" href="#ex-handler" data-tab="handler"><code>GetAccount</code><span class="sn__v">req.Number</span></a>
+          {% include how/wire.html cls="lit" %}
+          <a class="sn" href="#ex-store" data-tab="store"><code>FindAccountByNumber</code><span class="sn__v">number</span></a>
+          {% include how/wire.html cls="lit" %}
+          <a class="sn" href="#ex-store" data-tab="store"><code>findBy</code><span class="sn__v">q = pred + args[0]</span></a>
+          {% include how/wire.html cls="lit" %}
+          <a class="sn sn--snk" href="#ex-store" data-tab="store"><span class="sn__n"><span class="an__k" aria-hidden="true">■</span><code>Selectx</code></span><span class="sn__v">runs the SQL</span></a>
+        </div>
+      </li>
+    </ol>
+    <figcaption class="arch__key" id="arch-cap"><span><span class="an__s" aria-hidden="true">●</span> source: untrusted data comes in</span><span>◆ a call to another repository</span><span><span class="an__k" aria-hidden="true">■</span> sink: a dangerous call</span><span class="taint">red: the value we follow</span><span class="muted">Select a box to see its code.</span></figcaption>
+  </figure>
+
+  {% include how/example-code.html %}
+</section>

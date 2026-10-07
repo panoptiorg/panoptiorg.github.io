@@ -1,0 +1,73 @@
+{%- comment -%}
+  04 contracts, in route order: graphql:Query.searchByToken (webapp -> federation), then
+  pb.Account/GetAccount (federation -> backend). The marks show where each side takes the parts
+  of the name from. The ids are ContractIID(name) = SHA-256 over ("", "", name, "grpc"), each part
+  prefixed with its length as 8 little-endian bytes (panoptife-go internal/hash/hash.go,
+  panoptife-ts src/hash.ts). The values shipped here are in _data/how.json and match the bytes in
+  the golden CGF on both sides; src/js/how.js recomputes them in the browser (and runs the
+  "try a name" box), and tools/how.test.mjs checks the two agree.
+{%- endcomment -%}
+{%- assign grpc = site.data.how.contracts[0] -%}
+{%- assign gql = site.data.how.contracts[1] -%}
+<section class="step" id="contracts" aria-labelledby="contracts-h">
+  <p class="kicker">04 · frontends</p>
+  <h2 class="h2" id="contracts-h">Give both ends of a network call one name</h2>
+  <p class="lead">The two ends of a network call live in different repositories, read by separate runs of a frontend that never see each other. But both ends are built from the same schema, so each side can work out the same name on its own: <span class="np np--a">the type or service</span> and <span class="np np--b">the field or method</span>. Each side hashes its name into an id, and the engine links equal ids.</p>
+
+  <figure class="fig kn" data-kn aria-label="Two contracts, each named independently by its client and its server">
+    <div class="kn__pair" data-pair data-match="yes">
+      <div class="kn__side" data-side>
+        <p class="label"><span class="fe-dot fe-dot--ts" aria-hidden="true"></span>webapp · the client</p>
+<pre class="code code--wrap"><code>gql`
+	<mark class="np np--a">query</mark> Search($token: String!) {
+		<mark class="np np--b">searchByToken</mark>(token: $token)
+	}
+`</code></pre>
+        <p class="kn__why">A <code>query</code> asks for fields of the schema's root type, <code>Query</code>.</p>
+        <code class="kn__name" data-name>graphql:<mark class="np np--a">Query</mark>.<mark class="np np--b">searchByToken</mark></code>
+        <code class="kn__hash" data-hash>{{ gql.id | slice: 0, 16 }}…</code>
+      </div>
+      <div class="kn__mid"><span class="kn__d" aria-hidden="true">◆</span><span class="kn__yes">same id: linked</span><span class="kn__no">different id: no link</span></div>
+      <div class="kn__side" data-side data-handler="SearchByToken in federation">
+        <p class="label"><span class="fe-dot fe-dot--go" aria-hidden="true"></span>federation · the server</p>
+<pre class="code code--wrap"><code>func (ec *executionContext) _<mark class="np np--a">Query</mark>_<mark class="np np--b">searchByToken</mark>(…) (string, error) {
+	…
+	return ec.Resolvers.Query().SearchByToken(ctx, args["token"].(string))
+}</code></pre>
+        <p class="kn__why">gqlgen generates one dispatcher per field, named after its type and field. The resolver it calls serves the field.</p>
+        <code class="kn__name" data-name>graphql:<mark class="np np--a">Query</mark>.<mark class="np np--b">searchByToken</mark></code>
+        <code class="kn__hash" data-hash>{{ gql.id | slice: 0, 16 }}…</code>
+      </div>
+    </div>
+
+    <div class="kn__pair" data-pair data-match="yes">
+      <div class="kn__side" data-side>
+        <p class="label"><span class="fe-dot fe-dot--go" aria-hidden="true"></span>federation · the client</p>
+<pre class="code code--wrap"><code>type queryResolver struct{ client <u>pb</u>.<mark class="np np--a">Account</mark>Client }
+…
+r.client.<mark class="np np--b">GetAccount</mark>(ctx, &amp;pb.GetAccountRequest{Number: token})</code></pre>
+        <p class="kn__why">A call on <code>AccountClient</code>, the client gRPC generated in package <code>pb</code>.</p>
+        <code class="kn__name" data-name><u>pb</u>.<mark class="np np--a">Account</mark>/<mark class="np np--b">GetAccount</mark></code>
+        <code class="kn__hash" data-hash>{{ grpc.id | slice: 0, 16 }}…</code>
+      </div>
+      <div class="kn__mid"><span class="kn__d" aria-hidden="true">◆</span><span class="kn__yes">same id: linked</span><span class="kn__no">different id: no link</span></div>
+      <div class="kn__side" data-side data-handler="GetAccount in backend">
+        <p class="label"><span class="fe-dot fe-dot--go" aria-hidden="true"></span>backend · the server</p>
+<pre class="code code--wrap"><code>type Implementation struct {
+	<u>pb</u>.Unimplemented<mark class="np np--a">Account</mark>Server
+	storage *store.Storage
+}
+
+func (i *Implementation) <mark class="np np--b">GetAccount</mark>(ctx, req) …</code></pre>
+        <p class="kn__why">gRPC makes every server embed <code>UnimplementedAccountServer</code>; its method <code>GetAccount</code> serves the call.</p>
+        <code class="kn__name" data-name><u>pb</u>.<mark class="np np--a">Account</mark>/<mark class="np np--b">GetAccount</mark></code>
+        <code class="kn__hash" data-hash>{{ grpc.id | slice: 0, 16 }}…</code>
+      </div>
+    </div>
+
+    <div class="kn__try" data-try hidden>
+      <label class="kn__in"><span class="label">Try a name, as a client would write it</span><input type="text" value="{{ grpc.name }}" maxlength="48" spellcheck="false" autocomplete="off"></label>
+      <p class="kn__out"><code class="kn__hash" data-try-hash></code> <span data-try-out></span></p>
+    </div>
+  </figure>
+</section>
