@@ -5,8 +5,8 @@ title: panopti
 tagline: cross-repository taint analysis
 description: >-
   panopticode follows untrusted data across repositories and services: it joins every
-  repository's code graph, matches gRPC and GraphQL calls to their handlers, and reports each
-  taint flow with its full route.
+  repository's code graph, matches gRPC, GraphQL and HTTP calls to their handlers and Kafka
+  producers to consumers, and reports each taint flow with its full route.
 url: https://panopti.org
 baseurl: ""
 lang: en

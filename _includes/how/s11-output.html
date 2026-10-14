@@ -42,7 +42,7 @@
         <li><b>A finding is a route, not an exploit.</b> <code>sqli</code> means untrusted data reaches a call that runs SQL. Passed as a parameter of a prepared query, that is harmless, and it is still reported. panopticode never runs your code.</li>
         <li><b>The catalog bounds recall.</b> What it does not name is not looked for. Every run also prints the calls it could not see into; read that list on every new codebase.</li>
         <li><b>Scope matters.</b> Code the frontend did not read has no map. A sink behind it is invisible.</li>
-        <li><b>gRPC and GraphQL only, for now.</b> Plain HTTP between services, queues, caches and database round trips are not followed.</li>
+        <li><b>Four kinds of boundary.</b> gRPC, GraphQL, HTTP and Kafka topics are followed. HTTP only in the request direction: the response does not flow back to the caller. A Kafka topic joins a producer to a consumer when both are in the run. Connect, twirp, other queues, caches and database round trips are not followed.</li>
       </ul>
       <a class="box__link" href="https://github.com/panoptiorg/panopticode/blob/main/docs/limitations.md">→ docs/limitations.md</a>
     </div>

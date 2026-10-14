@@ -75,8 +75,8 @@ scripts:
     <div class="solution__text">
       <p class="kicker">Solution</p>
       <h2 class="h2" id="solution">Analyse all the repositories as one program.</h2>
-      <p class="lead">A frontend reads each repository and writes its code graph (CGF). The engine loads any number of them, matches every gRPC and GraphQL client call to its handler in the other repository by contract name, and runs taint analysis across the joined program. A network call becomes an ordinary function call.</p>
-      <p class="lead"><b>The engine is language-agnostic.</b> It never reads source code, only CGF. Each language is a frontend: Go and TypeScript/Svelte today. Every new frontend adds a language, and the engine doesn't change.</p>
+      <p class="lead">A frontend reads each repository and writes its code graph (CGF). The engine loads any number of them, matches every gRPC, GraphQL and HTTP client call to its handler in the other repository by contract name, joins Kafka producers to consumers through the topic, and runs taint analysis across the joined program. A network call becomes an ordinary function call.</p>
+      <p class="lead"><b>The engine is language-agnostic.</b> It never reads source code, only CGF. Each language is a frontend: Go and TypeScript/Svelte/React today. Every new frontend adds a language, and the engine doesn't change.</p>
       <a class="btn btn--primary" href="{{ '/panopticode/' | relative_url }}">&gt; panopticode deep dive</a>
     </div>
 
@@ -118,8 +118,9 @@ scripts:
     <div class="duo">
       <div class="box">
         <span class="label">One repository · yes</span>
-        <span class="box__text">Extract one repository and run the engine on that one CGF directory. You get every flow from a source to a sink inside it, with the same routes and the same catalog.</span>
-        <pre class="box__code">pc-fe build . --out cgf/app
+        <span class="box__text">Extract one repository with the frontend of its language (<code>pc-fe</code> for Go, <code>pc-fe-ts</code> for TypeScript) and run the engine on that one CGF directory. You get every flow from a source to a sink inside it, with the same routes and the same catalog.</span>
+        <pre class="box__code">pc-fe build . --out cgf/app        # Go
+pc-fe-ts build . --out cgf/app     # TypeScript
 panopticode taint --catalog catalog.example.toml \
     --cgf cgf/app &gt; chains.json</pre>
       </div>
