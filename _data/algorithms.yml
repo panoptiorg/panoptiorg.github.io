@@ -52,7 +52,7 @@
   name: Joining services by name
   topic: identity
   step: contracts
-  used: gRPC and GraphQL contracts
+  used: gRPC, GraphQL and HTTP contracts
   line: Two programs that never see each other derive the same name from generated code, and hash it the same way.
 - slug: tarjan-scc
   name: Tarjan's strongly connected components
